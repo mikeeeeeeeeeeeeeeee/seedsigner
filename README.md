@@ -129,8 +129,13 @@ Every UI change was rendered at 240x240 and inspected before committing.
 
 # Project Summary
 
-[![CI](https://github.com/SeedSigner/seedsigner/actions/workflows/tests.yml/badge.svg)](https://github.com/SeedSigner/seedsigner/actions/workflows/tests.yml)
-[![Build](https://github.com/SeedSigner/seedsigner/actions/workflows/build.yml/badge.svg)](https://github.com/SeedSigner/seedsigner/actions/workflows/build.yml)
+<!-- These point at THIS fork's workflow runs, not upstream's. An upstream badge on a
+     fork is green no matter what state the fork is in, which would be actively
+     misleading here. -->
+[![CI](https://github.com/mikeeeeeeeeeeeeeeee/seedsigner/actions/workflows/tests.yml/badge.svg?branch=dev)](https://github.com/mikeeeeeeeeeeeeeeee/seedsigner/actions/workflows/tests.yml)
+[![Build](https://github.com/mikeeeeeeeeeeeeeeee/seedsigner/actions/workflows/build.yml/badge.svg?branch=dev)](https://github.com/mikeeeeeeeeeeeeeeee/seedsigner/actions/workflows/build.yml)
+
+Upstream's own status: [![upstream CI](https://github.com/SeedSigner/seedsigner/actions/workflows/tests.yml/badge.svg)](https://github.com/SeedSigner/seedsigner/actions/workflows/tests.yml)
 
 The goal of SeedSigner is to lower the cost and complexity of Bitcoin multisignature wallet use. To accomplish this goal, SeedSigner offers anyone the opportunity to build a verifiably air-gapped, stateless Bitcoin signing device using inexpensive, publicly available hardware components (usually < $50). SeedSigner helps users save with Bitcoin by assisting with trustless private key generation and multisignature (aka "multisig") wallet setup, and helps users transact with Bitcoin via a secure, air-gapped QR-exchange signing model.
 
@@ -471,3 +476,22 @@ See the [SeedSigner OS repo](https://github.com/SeedSigner/seedsigner-os/) for i
 
 # Developer Local Build Instructions
 Raspberry Pi OS is commonly used for development. See the [Raspberry Pi OS Build Instructions](docs/raspberry_pi_os_build_instructions.md)
+
+### Building this fork
+
+Two steps that are easy to miss, both verified from a clean clone:
+
+```bash
+# 1. The translations live in a submodule, and this fork points at its own copy of it
+git submodule update --init src/seedsigner/resources/seedsigner-translations
+
+# 2. Compile the catalogs. Without this the language picker offers English and nothing else
+#    -- .mo files are generated, never committed.
+python setup.py compile_catalog          # needs Babel
+# ...or, without Babel:
+cd src/seedsigner/resources/seedsigner-translations/l10n
+for d in */; do msgfmt -o "${d}LC_MESSAGES/messages.mo" "${d}LC_MESSAGES/messages.po"; done
+```
+
+A fresh clone detects 1 language before step 2 and 23 after it. CI does both already
+(`submodules: recursive`, then `compile_catalog`).

@@ -10,6 +10,36 @@ from seedsigner.gui.screens.screen import ButtonOption
 logger = logging.getLogger(__name__)
 
 
+# Human-readable name for each family of QR we can recognize, keyed by the prefix of
+# the internal QRType value (e.g. "seed__compactseedqr" -> "seed"). Used to tell the
+# user what they actually scanned without exposing internal type strings.
+QR_TYPE_DISPLAY_NAMES = {
+    "psbt": _mft("a transaction"),
+    "seed": _mft("a seed"),
+    "settings": _mft("a settings QR"),
+    "xpub": _mft("an xpub"),
+    "bitcoin_address": _mft("an address"),
+    "sign_message": _mft("a message to sign"),
+    "wallet": _mft("a wallet descriptor"),
+    "output": _mft("a wallet descriptor"),
+    "account": _mft("a wallet descriptor"),
+    "bytes": _mft("raw data"),
+}
+
+
+def get_qr_type_display_name(qr_type: str) -> str:
+    """
+        Returns a translated, human-readable description of a QRType value.
+
+        Falls back to a de-underscored version of the raw type so an unrecognized
+        family still says something rather than nothing.
+    """
+    display_name = QR_TYPE_DISPLAY_NAMES.get(qr_type.split("__")[0])
+    if display_name:
+        return _(display_name)
+    return qr_type.replace("__", ": ").replace("_", " ")
+
+
 
 class ScanView(View):
     """
@@ -21,7 +51,7 @@ class ScanView(View):
         selected but a SeedQR was scanned).
     """
     instructions_text = _mft("Scan a QR code")
-    invalid_qr_type_message = _mft("QRCode not recognized or not yet supported.")
+    invalid_qr_type_message = _mft("QRCode not recognized or not yet supported")
 
 
     def __init__(self):
@@ -57,14 +87,16 @@ class ScanView(View):
         if self.decoder.is_complete:
             if not self.is_valid_qr_type:
                 # We recognized the QR type but it was not the type expected for the
-                # current flow.
-                # Report QR types in more human-readable text (e.g. QRType
-                # `seed__compactseedqr` as "seed: compactseedqr").
-                # TODO: cleanup l10n presentation
+                # current flow. Name both the expected and the scanned type in the
+                # user's own language rather than echoing the internal QRType value.
                 return Destination(ErrorView, view_args=dict(
                     title="Error",
                     status_headline=_("Wrong QR Type"),
-                    text=_(self.invalid_qr_type_message) + f""", received "{self.decoder.qr_type.replace("__", ": ").replace("_", " ")}\" format""",
+                    # TRANSLATOR_NOTE: "expected" is e.g. "Expected a SeedQR"; "actual" is e.g. "a transaction"
+                    text=_("{expected}, but scanned {actual}.").format(
+                        expected=_(self.invalid_qr_type_message),
+                        actual=get_qr_type_display_name(self.decoder.qr_type),
+                    ),
                     button_text="Back",
                     next_destination=Destination(BackStackView, skip_current_view=True),
                 ))

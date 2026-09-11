@@ -437,6 +437,16 @@ class SeedFinalizeScreen(ButtonListScreen):
         )
         self.components.append(self.fingerprint_icontl)
 
+        # "fingerprint" means nothing to a first-time user; say what the value is for.
+        self.components.append(TextArea(
+            # TRANSLATOR_NOTE: Explains the seed fingerprint shown above it
+            text=_("A short ID for this seed"),
+            font_color=GUIConstants.LABEL_FONT_COLOR,
+            is_text_centered=True,
+            auto_line_break=True,
+            screen_y=self.fingerprint_icontl.screen_y + self.fingerprint_icontl.height + GUIConstants.COMPONENT_PADDING,
+        ))
+
 
 
 @dataclass

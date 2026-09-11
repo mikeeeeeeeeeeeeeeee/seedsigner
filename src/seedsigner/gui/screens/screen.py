@@ -1111,7 +1111,9 @@ class PowerOffNotRequiredScreen(BaseTopNavScreen):
         super().__post_init__()
 
         self.components.append(TextArea(
-            text=_("It is safe to disconnect power at any time."),
+            # TRANSLATOR_NOTE: Reassures the user there is no shutdown sequence, and
+            # reminds them that seeds live only in memory and do not survive power loss.
+            text=_("It is safe to disconnect power at any time. Any seeds you loaded are erased."),
             screen_y=self.top_nav.height,
             height=self.canvas_height - self.top_nav.height,
         ))

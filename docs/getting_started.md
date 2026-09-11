@@ -144,8 +144,14 @@ The airgapped round trip:
    and the fee. This review is the entire point of a hardware signing device — a
    compromised computer can show you one address and ask you to sign another. Check the
    address on the *device's* screen against where you actually intend to send.
-5. Approve. The device shows the signed transaction as a QR code.
-6. Scan that QR code back into your wallet software, which broadcasts it.
+5. **Check the change.** Any amount not sent to the recipient or paid as a fee comes
+   back to you as *change*. The device recalculates the change address from your seed
+   and shows **Address verified!** when it matches. If it shows **Not verified**, it
+   could not check it — for a multisig wallet, load the wallet descriptor and verify
+   before continuing. An unverified change output is how funds get silently redirected.
+6. Approve. The final screen names the seed that will sign, by fingerprint. The device
+   then shows the signed transaction as a QR code.
+7. Scan that QR code back into your wallet software, which broadcasts it.
 
 The device never sees your wallet's internet connection and never transmits your seed.
 

@@ -298,6 +298,9 @@ class TestSeedFlows(FlowTest):
         self.controller.storage.set_pending_seed(seed)
         self.controller.storage.finalize_pending_seed()
 
+        # Ensure both sig types are enabled so the sig type screen is actually shown
+        self.settings.set_value(SettingsConstants.SETTING__SIG_TYPES, [x for x, y in SettingsConstants.ALL_SIG_TYPES])
+
         # enable custom derivation script_type setting (plus at least one more for a choice)
         self.settings.set_value(SettingsConstants.SETTING__SCRIPT_TYPES, [
             SettingsConstants.NATIVE_SEGWIT, 

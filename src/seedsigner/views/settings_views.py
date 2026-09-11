@@ -132,13 +132,14 @@ class SettingsSimpleSetupView(View):
         enabled, so narrowing those three settings to the single most common choice
         removes all three prompts without touching any flow logic.
 
-        Reversible: the same screen offers to restore the shipped defaults.
+        This fork ships in that narrowed state, so on a fresh device this screen offers
+        the opposite direction: re-enable every option. Both directions stay available.
     """
     # TRANSLATOR_NOTE: Applies a preset that reduces the number of questions the device asks
     APPLY = ButtonOption("Use simple setup")
 
-    # TRANSLATOR_NOTE: Undoes the simple setup preset, re-enabling every option
-    RESTORE = ButtonOption("Restore all options")
+    # TRANSLATOR_NOTE: Re-enables the full set of wallet options, so the device asks again
+    RESTORE = ButtonOption("Show all options")
 
     # The most widely supported choice for each setting. Single sig + Native Segwit is
     # what a typical modern single-signature wallet expects, and the UR "crypto-account"
@@ -147,6 +148,27 @@ class SettingsSimpleSetupView(View):
         SettingsConstants.SETTING__SIG_TYPES: [SettingsConstants.SINGLE_SIG],
         SettingsConstants.SETTING__SCRIPT_TYPES: [SettingsConstants.NATIVE_SEGWIT],
         SettingsConstants.SETTING__XPUB_QR_FORMAT: [SettingsConstants.XPUB_QR_FORMAT__UR_CRYPTO_ACCOUNT],
+    }
+
+    # The broader set to hand back when the user asks to see every option. Spelled out
+    # here rather than read from `SettingsDefinition`, because this fork *ships* the
+    # simple values as the defaults -- reading them back would make this a no-op. These
+    # are upstream's defaults: every sig type, the three modern script types, and both
+    # of the widely supported xpub QR formats.
+    FULL_VALUES = {
+        SettingsConstants.SETTING__SIG_TYPES: [
+            SettingsConstants.SINGLE_SIG,
+            SettingsConstants.MULTISIG,
+        ],
+        SettingsConstants.SETTING__SCRIPT_TYPES: [
+            SettingsConstants.NATIVE_SEGWIT,
+            SettingsConstants.NESTED_SEGWIT,
+            SettingsConstants.TAPROOT,
+        ],
+        SettingsConstants.SETTING__XPUB_QR_FORMAT: [
+            SettingsConstants.XPUB_QR_FORMAT__UR_CRYPTO_ACCOUNT,
+            SettingsConstants.XPUB_QR_FORMAT__STATIC,
+        ],
     }
 
 
@@ -162,7 +184,7 @@ class SettingsSimpleSetupView(View):
     def run(self):
         if self.is_simple_setup_active:
             button_data = [self.RESTORE]
-            description = _("Simple setup is on: Single Sig, Native Segwit only. Restore to get every option back.")
+            description = _("Simple setup is on: Single Sig, Native Segwit only. Show all options if you need multisig or other address types.")
         else:
             button_data = [self.APPLY]
             description = _("Fewer questions when exporting to your wallet. Assumes a standard Single Sig, Native Segwit setup.")
@@ -183,9 +205,8 @@ class SettingsSimpleSetupView(View):
                 self.settings.set_value(attr_name, list(value))
 
         elif button_data[selected_menu_num] == self.RESTORE:
-            for attr_name in self.SIMPLE_VALUES:
-                default_value = SettingsDefinition.get_settings_entry(attr_name).default_value
-                self.settings.set_value(attr_name, list(default_value))
+            for attr_name, value in self.FULL_VALUES.items():
+                self.settings.set_value(attr_name, list(value))
 
         return Destination(SettingsMenuView, clear_history=True)
 

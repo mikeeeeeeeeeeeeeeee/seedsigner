@@ -629,7 +629,8 @@ class SettingsDefinition:
                       type=SettingsConstants.TYPE__MULTISELECT,
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       selection_options=SettingsConstants.ALL_SIG_TYPES,
-                      default_value=SettingsConstants.ALL_SIG_TYPES),
+                      # Ships narrowed to single sig; see SettingsSimpleSetupView.
+                      default_value=[SettingsConstants.SINGLE_SIG]),
 
         SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
                       attr_name=SettingsConstants.SETTING__SCRIPT_TYPES,
@@ -640,7 +641,8 @@ class SettingsDefinition:
                       type=SettingsConstants.TYPE__MULTISELECT,
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       selection_options=SettingsConstants.ALL_SCRIPT_TYPES,
-                      default_value=[SettingsConstants.NATIVE_SEGWIT, SettingsConstants.NESTED_SEGWIT, SettingsConstants.TAPROOT]),
+                      # Ships narrowed to native segwit; see SettingsSimpleSetupView.
+                      default_value=[SettingsConstants.NATIVE_SEGWIT]),
 
         SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
                       attr_name=SettingsConstants.SETTING__XPUB_QR_FORMAT,
@@ -650,10 +652,8 @@ class SettingsDefinition:
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       type=SettingsConstants.TYPE__MULTISELECT,
                       selection_options=SettingsConstants.ALL_XPUB_QR_FORMATS,
-                      default_value=[
-                            SettingsConstants.XPUB_QR_FORMAT__UR_CRYPTO_ACCOUNT,
-                            SettingsConstants.XPUB_QR_FORMAT__STATIC,
-                      ]),
+                      # Ships narrowed to the animated default; see SettingsSimpleSetupView.
+                      default_value=[SettingsConstants.XPUB_QR_FORMAT__UR_CRYPTO_ACCOUNT]),
 
         SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
                       attr_name=SettingsConstants.SETTING__XPUB_DETAILS,

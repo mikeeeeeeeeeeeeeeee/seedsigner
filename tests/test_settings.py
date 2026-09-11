@@ -144,9 +144,11 @@ class TestSettingsQRParser(SettingsQRBase):
         assert self.settings.get_value(SettingsConstants.SETTING__COMPACT_SEEDQR) == SettingsConstants.OPTION__ENABLED
         assert self.settings.get_value(SettingsConstants.SETTING__DIRE_WARNINGS) == SettingsConstants.OPTION__ENABLED
 
+        # The baseline SettingsQR was built from the defaults, so parsing it must
+        # reinstate exactly those, replacing the values set above. Derived from the
+        # definition rather than hard-coded so the test survives a change of defaults.
         xpub_qr_formats = self.settings.get_value(SettingsConstants.SETTING__XPUB_QR_FORMAT)
-        assert SettingsConstants.XPUB_QR_FORMAT__UR_CRYPTO_ACCOUNT in xpub_qr_formats
-        assert SettingsConstants.XPUB_QR_FORMAT__STATIC in xpub_qr_formats
+        assert xpub_qr_formats == SettingsDefinition.get_settings_entry(SettingsConstants.SETTING__XPUB_QR_FORMAT).default_value
         assert SettingsConstants.XPUB_QR_FORMAT__SPECTER_LEGACY not in xpub_qr_formats
     
 

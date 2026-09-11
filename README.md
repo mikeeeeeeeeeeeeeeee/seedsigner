@@ -45,6 +45,14 @@ If you have specific questions about the project, our [Telegram Group](https://t
 
 New to SeedSigner? Once your device boots, [Getting Started](docs/getting_started.md) walks through the controls, creating or loading a seed, and signing your first transaction.
 
+### How this fork differs from upstream
+
+Besides the AI-authorship caveat above, this fork ships one deliberate behavioral
+change: the wallet options are narrowed by default to a standard single-signature,
+Native Segwit setup, which removes the signature type, script type and QR format
+prompts. **Settings > Simple setup > Show all options** restores upstream's full set at
+any time. See [Getting Started](docs/getting_started.md#simple-setup-and-how-to-turn-it-off).
+
 ### Feature Highlights:
 * Stateless, air-gapped operation:
   * Temporarily stores seeds in memory while the device is powered; all memory is wiped when power is removed.

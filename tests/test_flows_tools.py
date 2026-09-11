@@ -21,6 +21,13 @@ class TestToolsFlows(FlowTest):
         controller.storage.set_pending_seed(seed)
         controller.storage.finalize_pending_seed()
 
+        # This flow exercises the script type selection screen, which only renders when
+        # more than one script type is enabled.
+        self.settings.set_value(
+            SettingsConstants.SETTING__SCRIPT_TYPES,
+            [SettingsConstants.NATIVE_SEGWIT, SettingsConstants.NESTED_SEGWIT, SettingsConstants.TAPROOT],
+        )
+
         self.run_sequence([
             FlowStep(MainMenuView, button_data_selection=MainMenuView.TOOLS),
             FlowStep(tools_views.ToolsMenuView, button_data_selection=tools_views.ToolsMenuView.ADDRESS_EXPLORER),

@@ -171,10 +171,11 @@ class TestSettingsFlows(FlowTest):
         self.controller.storage.set_pending_seed(seed)
         self.controller.storage.finalize_pending_seed()
 
-        # With the shipped defaults, each of the three Views renders its own prompt.
-        assert len(self.settings.get_value(SettingsConstants.SETTING__SIG_TYPES)) > 1
-        assert len(self.settings.get_value(SettingsConstants.SETTING__SCRIPT_TYPES)) > 1
-        assert len(self.settings.get_value(SettingsConstants.SETTING__XPUB_QR_FORMAT)) > 1
+        # This fork ships already narrowed, so widen the settings first to establish the
+        # "before" state that each of the three Views renders its own prompt in.
+        for attr_name, value in settings_views.SettingsSimpleSetupView.FULL_VALUES.items():
+            self.settings.set_value(attr_name, list(value))
+            assert len(self.settings.get_value(attr_name)) > 1
 
         # Walk the whole flow to prove each of the three Views really renders a prompt:
         # a View that redirected instead of running its Screen would raise here.
@@ -229,12 +230,15 @@ class TestSettingsFlows(FlowTest):
         )
 
 
-    def test_simple_setup_is_reversible(self):
-        """ Restoring from Simple Setup should put every managed setting back to its shipped default. """
-        defaults = {
-            attr_name: SettingsDefinition.get_settings_entry(attr_name).default_value
-            for attr_name in settings_views.SettingsSimpleSetupView.SIMPLE_VALUES
-        }
+    def test_simple_setup_ships_on_and_is_reversible_both_ways(self):
+        """
+            This fork ships with the simple values as the defaults, and the screen must
+            be able to widen back to the full option set and narrow again.
+        """
+        # A fresh device is already in the simple state.
+        for attr_name, value in settings_views.SettingsSimpleSetupView.SIMPLE_VALUES.items():
+            assert SettingsDefinition.get_settings_entry(attr_name).default_value == value
+            assert self.settings.get_value(attr_name) == value
 
         def apply_preset(button_option):
             self.run_sequence([
@@ -244,11 +248,12 @@ class TestSettingsFlows(FlowTest):
                 FlowStep(settings_views.SettingsMenuView),
             ])
 
+        # Already simple, so the screen offers RESTORE: widen to the full option set.
+        apply_preset(settings_views.SettingsSimpleSetupView.RESTORE)
+        for attr_name, value in settings_views.SettingsSimpleSetupView.FULL_VALUES.items():
+            assert self.settings.get_value(attr_name) == value
+
+        # ...and back again.
         apply_preset(settings_views.SettingsSimpleSetupView.APPLY)
         for attr_name, value in settings_views.SettingsSimpleSetupView.SIMPLE_VALUES.items():
             assert self.settings.get_value(attr_name) == value
-
-        # The screen now offers RESTORE instead of APPLY
-        apply_preset(settings_views.SettingsSimpleSetupView.RESTORE)
-        for attr_name, default_value in defaults.items():
-            assert self.settings.get_value(attr_name) == default_value

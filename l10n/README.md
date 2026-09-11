@@ -8,6 +8,16 @@
 1. Completed translations are downloaded as `messages.po` files for each language.
 1. Python "compiles" them into `messages.mo` files ready for use.
 1. The `*.po` and `*.mo` files are written to the [seedsigner-translations](https://github.com/SeedSigner/seedsigner-translations) repo.
+
+> **Fork note:** this fork's submodule points at
+> [mikeeeeeeeeeeeeeeee/seedsigner-translations](https://github.com/mikeeeeeeeeeeeeeeee/seedsigner-translations),
+> not upstream's, because the strings this fork added or changed need German entries that
+> upstream's catalog does not carry. Everything else about the workflow below is unchanged.
+>
+> Babel is not required to keep the catalog current: `python tools/check_translations.py`
+> reports (and with `--append` writes) missing entries, and `msgfmt` compiles `.po` to
+> `.mo`. `extract_messages` remains the source of truth when available.
+
 1. That repo is linked as a submodule here as `seedsigner.resources.seedsigner-translations`.
 1. Python code retrieves a translation on demand.
 

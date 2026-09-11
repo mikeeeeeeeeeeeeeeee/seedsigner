@@ -20,6 +20,7 @@ Aimed at making the device less intimidating for first-time users:
   Show all options* restores upstream's full set.
 * **A short guide on first start**, skippable, plus [Getting Started](docs/getting_started.md).
 * **Every setting explains itself** on screen; clearer menu labels, warnings and errors.
+* **German throughout** — the new and changed strings are translated, not left in English.
 * **Fixed** a layout bug where settings with several options drew the button list over
   their own title.
 
@@ -78,6 +79,16 @@ honest to record "already seen". Reopen it under *Settings > Quick guide*.
   text. "Script types" (five options) was hiding its own title before any change here.
 * Three `logger.warning()` calls meant to name an oversized button label were not
   f-strings, so they always logged the literal `{self.text}`.
+
+#### German
+
+All 420 catalog strings now have German, up from 350: the 70 this fork added or changed
+(plus a few upstream strings that postdate the last translation sync) were translated in
+the existing catalog's voice. Two labels that overflowed their buttons in German were
+measured and shortened rather than left clipped.
+
+Because those entries cannot live in upstream's translation repo, the submodule points at
+a fork of it. See [l10n/README.md](l10n/README.md).
 
 #### Developer tooling
 

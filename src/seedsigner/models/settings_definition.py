@@ -83,6 +83,7 @@ class SettingsConstants:
     LOCALE__JAPANESE = "ja"
     LOCALE__JAVANESE = "jv"
     LOCALE__KOREAN = "ko"
+    LOCALE__KLINGON = "tlh"
     LOCALE__LAO = "lo"
     LOCALE__LATVIAN = "lv"
     LOCALE__LITHUANIAN = "lt"
@@ -147,6 +148,7 @@ class SettingsConstants:
         LOCALE__NORWEGIAN: "(incomplete) Norsk (Norwegian)",
         LOCALE__RUSSIAN: "(incomplete) русский (Russian)",  # OpenSans includes cyrillic chars
         LOCALE__TURKISH: "(incomplete) Türkçe (Turkish)",
+        LOCALE__KLINGON: "(incomplete) tlhIngan Hol (Klingon)",
 
         # --------- Placeholders / Coming soon ------------------------------------------
         # Commented out options require explicit additional font support.

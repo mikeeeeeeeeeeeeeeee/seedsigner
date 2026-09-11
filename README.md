@@ -90,6 +90,11 @@ measured and shortened rather than left clipped.
 Because those entries cannot live in upstream's translation repo, the submodule points at
 a fork of it. See [l10n/README.md](l10n/README.md).
 
+Also present: a partial **Klingon** catalog (`tlhIngan Hol`, Latin transliteration), 33 of
+420 strings using only attested vocabulary. Listed as `(incomplete)`; everything else —
+including every security warning — falls back to English. pIqaD is not possible without
+shipping a font for the Unicode Private Use Area.
+
 #### Developer tooling
 
 * `tools/check_screen_layout.py` renders all 157 screens and reports text colliding with

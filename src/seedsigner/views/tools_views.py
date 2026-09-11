@@ -19,9 +19,14 @@ logger = logging.getLogger(__name__)
 
 
 class ToolsMenuView(View):
-    IMAGE = ButtonOption("New seed", FontAwesomeIconConstants.CAMERA)
-    DICE = ButtonOption("New seed", FontAwesomeIconConstants.DICE)
-    KEYBOARD = ButtonOption("Calc 12th/24th word", FontAwesomeIconConstants.KEYBOARD)
+    # TRANSLATOR_NOTE: Create a new seed using randomness from a camera photo
+    IMAGE = ButtonOption("New seed (photo)", FontAwesomeIconConstants.CAMERA)
+
+    # TRANSLATOR_NOTE: Create a new seed using randomness from dice rolls
+    DICE = ButtonOption("New seed (dice)", FontAwesomeIconConstants.DICE)
+
+    # TRANSLATOR_NOTE: Calculate the checksum-carrying last word of a 12- or 24-word seed
+    KEYBOARD = ButtonOption("Calculate final word", FontAwesomeIconConstants.KEYBOARD)
     ADDRESS_EXPLORER = ButtonOption("Address explorer")
     VERIFY_ADDRESS = ButtonOption("Verify address")
 

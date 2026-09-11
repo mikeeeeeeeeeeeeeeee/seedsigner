@@ -18,6 +18,7 @@
 ---------------
 
 * [Project Summary](#project-summary)
+* [Getting Started (first-time users)](docs/getting_started.md)
 * [Shopping List](#shopping-list)
 * [Software Installation](#software-installation)
   * [Verifying your download](#verifying-your-download)
@@ -41,6 +42,8 @@ Additional information about the project can be found at [SeedSigner.com](https:
 You can follow [@SeedSigner](https://twitter.com/SeedSigner) on Twitter for the latest project news and developments.
 
 If you have specific questions about the project, our [Telegram Group](https://t.me/joinchat/GHNuc_nhNQjLPWsS) is a great place to ask them.
+
+New to SeedSigner? Once your device boots, [Getting Started](docs/getting_started.md) walks through the controls, creating or loading a seed, and signing your first transaction.
 
 ### Feature Highlights:
 * Stateless, air-gapped operation:

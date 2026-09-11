@@ -271,3 +271,77 @@ class TestPSBTOwnershipClaimRouting(FlowTest):
         # The psbt itself is kept: the user is choosing a different seed for it, not
         # starting over
         assert self.controller.psbt is not None
+
+
+class TestPSBTChangeFingerprintMismatch(FlowTest):
+    """
+    A change output can be provably derived from the signing seed while the psbt labels
+    it with some other wallet's fingerprint: PSBTParser decides "is this change?" by
+    re-deriving the script from the supplied path, and the ownership-claim scan
+    deliberately ignores derivations that name a fingerprint other than the seed's
+    (there is nothing to prove or disprove about another wallet's key).
+
+    Nothing legitimate produces that combination, so the flow must refuse the
+    transaction rather than presenting it as an unimplemented feature.
+    """
+
+    def build_psbt_with_foreign_change_fingerprint(self) -> PSBT:
+        from embit import bip32
+        from embit.psbt import DerivationPath
+
+        psbt: PSBT = PSBT.parse(a2b_base64(PSBTTestData.SINGLE_SIG_NATIVE_SEGWIT_1_INPUT))
+        input_amount = sum([inp.utxo.value for inp in psbt.inputs])
+        recipient_amount = 100_000
+        fee_amount = 5_000
+
+        psbt.outputs.clear()
+        psbt.outputs.append(create_output(PSBTTestData.SINGLE_SIG_NATIVE_SEGWIT_RECEIVE, recipient_amount))
+        change_output = create_output(
+            PSBTTestData.SINGLE_SIG_NATIVE_SEGWIT_CHANGE,
+            input_amount - recipient_amount - fee_amount,
+        )
+
+        # Relabel the change output's derivation with a foreign fingerprint, keeping the
+        # public key and the derivation path exactly as they were. The script still
+        # derives from our seed, so it is still recognized as change.
+        assert len(change_output.bip32_derivations) == 1
+        public_key, derivation_path = list(change_output.bip32_derivations.items())[0]
+        foreign_fingerprint = bytes.fromhex("deadbeef")
+        assert foreign_fingerprint != derivation_path.fingerprint
+        change_output.bip32_derivations[public_key] = DerivationPath(
+            foreign_fingerprint, derivation_path.derivation
+        )
+
+        psbt.outputs.append(change_output)
+        return psbt
+
+
+    def test_change_output_with_foreign_fingerprint_is_refused(self):
+        psbt = self.build_psbt_with_foreign_change_fingerprint()
+
+        seed = PSBTTestData.seed
+        self.settings.set_value(SettingsConstants.SETTING__NETWORK, SettingsConstants.REGTEST)
+        self.controller.storage.set_pending_seed(seed)
+        self.controller.storage.finalize_pending_seed()
+        self.controller.psbt = psbt
+        self.controller.psbt_seed = seed
+
+        # Sanity check: the output really is treated as change, and really does carry a
+        # fingerprint that is not the signing seed's. Without both, the test would pass
+        # for the wrong reason.
+        from seedsigner.models.psbt_parser import PSBTParser
+        psbt_parser = PSBTParser(p=psbt, seed=seed, network=SettingsConstants.REGTEST)
+        assert psbt_parser.num_change_outputs == 1
+        seed_fingerprint = seed.get_fingerprint(SettingsConstants.REGTEST)
+        assert seed_fingerprint not in psbt_parser.get_change_data(change_num=0)["claimed_fingerprints"]
+
+        self.controller.psbt_parser = psbt_parser
+
+        self.run_sequence(
+            initial_destination_view_args=dict(change_address_num=0),
+            sequence=[
+                FlowStep(psbt_views.PSBTChangeDetailsView, is_redirect=True),
+                FlowStep(psbt_views.PSBTAddressVerificationFailedView, screen_return_value=0),
+                FlowStep(MainMenuView),
+            ],
+        )

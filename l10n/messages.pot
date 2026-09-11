@@ -1890,3 +1890,11 @@ msgstr ""
 #: src/seedsigner/views/view.py
 msgid "New here? The quick guide covers the buttons and your first steps."
 msgstr ""
+
+#: src/seedsigner/views/psbt_views.py
+msgid "Fingerprint Mismatch"
+msgstr ""
+
+#: src/seedsigner/views/psbt_views.py
+msgid "An output of this transaction names a different wallet than the seed you are signing with."
+msgstr ""

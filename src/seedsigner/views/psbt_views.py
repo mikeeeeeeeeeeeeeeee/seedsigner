@@ -5,7 +5,7 @@ from seedsigner.models.psbt_parser import (PSBTInputOwnershipClaimError,
 from seedsigner.models.settings import SettingsConstants
 from seedsigner.gui.components import FontAwesomeIconConstants, GUIConstants, SeedSignerIconConstants
 from seedsigner.gui.screens.screen import (RET_CODE__BACK_BUTTON, ButtonListScreen, ButtonOption, LargeIconStatusScreen, WarningScreen, DireWarningScreen, QRDisplayScreen)
-from seedsigner.views.view import BackStackView, MainMenuView, NotYetImplementedView, View, Destination
+from seedsigner.views.view import BackStackView, MainMenuView, View, Destination
 
 
 
@@ -350,8 +350,16 @@ class PSBTChangeDetailsView(View):
         seed_fingerprint = self.controller.psbt_seed.get_fingerprint(self.settings.get_value(SettingsConstants.SETTING__NETWORK))
 
         if seed_fingerprint not in change_data.get("claimed_fingerprints"):
-            # TODO: Something is wrong with this psbt(?). Reroute to warning?
-            return Destination(NotYetImplementedView)
+            # This output was proven to derive from the signing seed (that is why it is
+            # in change_data at all), yet the psbt labels it with some other wallet's
+            # fingerprint. Nothing legitimate produces that combination, so refuse the
+            # transaction instead of guessing. `clear_history` prevents BACK returning
+            # into the signing flow.
+            return Destination(
+                PSBTAddressVerificationFailedView,
+                view_args=dict(is_multisig=psbt_parser.is_multisig, is_fingerprint_mismatch=True),
+                clear_history=True,
+            )
 
         i = change_data.get("claimed_fingerprints").index(seed_fingerprint)
         claimed_derivation_path = change_data.get("claimed_derivation_paths")[i]
@@ -550,24 +558,35 @@ class PSBTAddressVerificationFailedView(View):
     Reached when a change or self-transfer output fails address verification. Shows a dire
     warning and discards the psbt to the main menu.
     """
-    def __init__(self, is_change: bool = True, is_multisig: bool = False):
+    def __init__(self, is_change: bool = True, is_multisig: bool = False, is_fingerprint_mismatch: bool = False):
         super().__init__()
         self.is_change = is_change
         self.is_multisig = is_multisig
+        self.is_fingerprint_mismatch = is_fingerprint_mismatch
 
 
     def run(self):
-        if self.is_multisig:
+        if self.is_fingerprint_mismatch:
+            # The output provably derives from this seed, but the psbt labelled it with
+            # some other wallet's fingerprint. Distinct from the checks below, where the
+            # address itself could not be reproduced.
+            status_headline = _("Fingerprint Mismatch")
+            text = _("An output of this transaction names a different wallet than the seed you are signing with.")
+
+        elif self.is_multisig:
+            status_headline = _("Address Verification Failed")
             # TRANSLATOR_NOTE: Variable is either "change" or "self-transfer".
             text = _("Transaction's {} address could not be verified from wallet descriptor.").format(_("change") if self.is_change else _("self-transfer"))
+
         else:
+            status_headline = _("Address Verification Failed")
             # TRANSLATOR_NOTE: Variable is either "change" or "self-transfer".
             text = _("Transaction's {} address could not be generated from your seed.").format(_("change") if self.is_change else _("self-transfer"))
-        
+
         self.run_screen(
             DireWarningScreen,
             title=_("Suspicious Transaction"),
-            status_headline=_("Address Verification Failed"),
+            status_headline=status_headline,
             text=text,
             button_data=[ButtonOption("Discard transaction")],
             show_back_button=False,

@@ -178,6 +178,10 @@ def generate_screenshots(locale):
         controller.settings.set_value(SettingsConstants.SETTING__SIG_TYPES, [attr for attr, name in SettingsConstants.ALL_SIG_TYPES])
         controller.settings.set_value(SettingsConstants.SETTING__SCRIPT_TYPES, [attr for attr, name in SettingsConstants.ALL_SCRIPT_TYPES])
 
+        # Every option must be enabled or the Views that offer a choice skip themselves
+        # and never render. This fork ships xpub_qr_format narrowed to one option.
+        controller.settings.set_value(SettingsConstants.SETTING__XPUB_QR_FORMAT, [attr for attr, name in SettingsConstants.ALL_XPUB_QR_FORMATS])
+
         controller.storage.seeds.append(seed_12)
         controller.storage.seeds.append(seed_12b)
         controller.storage.seeds.append(seed_24)

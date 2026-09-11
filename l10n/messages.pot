@@ -1589,3 +1589,264 @@ msgid ""
 "MicroSD card to continue."
 msgstr ""
 
+
+#: src/seedsigner/gui/screens/screen.py
+msgid "It is safe to disconnect power at any time. Any seeds you loaded are erased."
+msgstr ""
+
+#. Explains the seed fingerprint shown above it
+#: src/seedsigner/gui/screens/seed_screens.py
+msgid "A short ID for this seed"
+msgstr ""
+
+#. Urges the user to check the seed words they just wrote down
+#: src/seedsigner/gui/screens/seed_screens.py
+msgid "Check the words you wrote down. An incorrect backup means lost funds."
+msgstr ""
+
+#: src/seedsigner/gui/screens/settings_screens.py src/seedsigner/views/settings_views.py
+msgid "Version"
+msgstr ""
+
+#. Counts frames collected so far vs the total required (e.g. 12/50)
+#: src/seedsigner/gui/screens/tools_screens.py
+msgid "{}/{}"
+msgstr ""
+
+#. Shown while the camera gathers the image frames a new seed requires
+#: src/seedsigner/gui/screens/tools_screens.py
+msgid "Collecting entropy frames"
+msgstr ""
+
+#. How bitcoin amounts are displayed throughout the UI
+#: src/seedsigner/models/settings_definition.py
+msgid "How amounts are displayed"
+msgstr ""
+
+#. Use this if the camera preview appears upside down or sideways
+#: src/seedsigner/models/settings_definition.py
+msgid "Fix an upside-down camera preview"
+msgstr ""
+
+#. Mainnet is real bitcoin; testnet/regtest coins have no value
+#: src/seedsigner/models/settings_definition.py
+msgid "Mainnet is real bitcoin"
+msgstr ""
+
+#. Denser QR codes fit more data per frame but are harder for a wallet to scan
+#: src/seedsigner/models/settings_definition.py
+msgid "Denser is faster but harder to scan"
+msgstr ""
+
+#. Single sig = one key signs; multisig = several keys must sign
+#: src/seedsigner/models/settings_definition.py
+msgid "Single sig and/or multisig wallets"
+msgstr ""
+
+#. Script type determines the address format (e.g. bc1... vs 3...)
+#: src/seedsigner/models/settings_definition.py
+msgid "Address formats your wallet uses"
+msgstr ""
+
+#. Which QR format the xpub is exported in; must match the wallet software
+#: src/seedsigner/models/settings_definition.py
+msgid "Must match your wallet software"
+msgstr ""
+
+#. Extra technical detail shown alongside an exported xpub
+#: src/seedsigner/models/settings_definition.py
+msgid "Show derivation path details"
+msgstr ""
+
+#. An optional extra secret that creates a different wallet from the same seed
+#: src/seedsigner/models/settings_definition.py
+msgid "Optional extra secret word"
+msgstr ""
+
+#. A smaller SeedQR format with fewer dots to transcribe by hand
+#: src/seedsigner/models/settings_definition.py
+msgid "Smaller QR, less to transcribe"
+msgstr ""
+
+#. Derive additional independent seeds from one master seed
+#: src/seedsigner/models/settings_definition.py
+msgid "Derive extra seeds from this seed"
+msgstr ""
+
+#. How long the on-screen alert stays up when the SD card is inserted/removed
+#: src/seedsigner/models/settings_definition.py
+msgid "How long the SD alert is shown"
+msgstr ""
+
+#. Sign an arbitrary text message to prove you control an address
+#: src/seedsigner/models/settings_definition.py
+msgid "Prove you control an address"
+msgstr ""
+
+#. Warnings shown before displaying data that could leak your privacy
+#: src/seedsigner/models/settings_definition.py
+msgid "Warn before revealing an xpub"
+msgstr ""
+
+#. Warnings shown before displaying secret data such as seed words
+#: src/seedsigner/models/settings_definition.py
+msgid "Warn before showing seed words"
+msgstr ""
+
+#. Hint shown on QR screens explaining how to fix a QR a wallet cannot scan
+#: src/seedsigner/models/settings_definition.py
+msgid "Hint if a QR will not scan"
+msgstr ""
+
+#. Partner logos shown in the screensaver
+#: src/seedsigner/models/settings_definition.py
+msgid "Show logos in the screensaver"
+msgstr ""
+
+#. Only change this if the screen is blank, garbled or the wrong size
+#: src/seedsigner/models/settings_definition.py
+msgid "Only change if the screen is wrong"
+msgstr ""
+
+#. Use this if screen colors look wrong (e.g. red and blue swapped)
+#: src/seedsigner/models/settings_definition.py
+msgid "Fix wrong-looking screen colors"
+msgstr ""
+
+#: src/seedsigner/views/psbt_views.py
+msgid "Select a different seed"
+msgstr ""
+
+#. SeedSigner cannot confirm the change output is really the user's own
+#: src/seedsigner/views/psbt_views.py
+msgid "SeedSigner cannot verify change for this script type. Check the change address yourself."
+msgstr ""
+
+#: src/seedsigner/views/psbt_views.py
+msgid "Seed Can't Sign"
+msgstr ""
+
+#: src/seedsigner/views/psbt_views.py
+msgid "None of the inputs in this transaction are controlled by this seed."
+msgstr ""
+
+#: src/seedsigner/views/psbt_views.py
+msgid "Likely an Attack!"
+msgstr ""
+
+#: src/seedsigner/views/psbt_views.py
+msgid "The transaction's change/self-transfer outputs are not going back to your wallet."
+msgstr ""
+
+#: src/seedsigner/views/psbt_views.py
+msgid "Transaction Problem"
+msgstr ""
+
+#: src/seedsigner/views/psbt_views.py
+msgid "This transaction incorrectly claims that its input(s) belong to this seed."
+msgstr ""
+
+#: src/seedsigner/views/scan_views.py
+msgid "a transaction"
+msgstr ""
+
+#: src/seedsigner/views/scan_views.py
+msgid "a seed"
+msgstr ""
+
+#: src/seedsigner/views/scan_views.py
+msgid "a settings QR"
+msgstr ""
+
+#: src/seedsigner/views/scan_views.py
+msgid "an xpub"
+msgstr ""
+
+#: src/seedsigner/views/scan_views.py
+msgid "an address"
+msgstr ""
+
+#: src/seedsigner/views/scan_views.py
+msgid "a message to sign"
+msgstr ""
+
+#: src/seedsigner/views/scan_views.py
+msgid "a wallet descriptor"
+msgstr ""
+
+#: src/seedsigner/views/scan_views.py
+msgid "raw data"
+msgstr ""
+
+#: src/seedsigner/views/scan_views.py
+msgid "QRCode not recognized or not yet supported"
+msgstr ""
+
+#: src/seedsigner/views/scan_views.py
+msgid "Invalid Seed QR"
+msgstr ""
+
+#: src/seedsigner/views/scan_views.py
+msgid "Could not read a valid seed phrase from this QR code."
+msgstr ""
+
+#. "expected" is e.g. "Expected a SeedQR"; "actual" is e.g. "a transaction"
+#: src/seedsigner/views/scan_views.py
+msgid "{expected}, but scanned {actual}."
+msgstr ""
+
+#: src/seedsigner/views/scan_views.py
+msgid "Only multisig wallet descriptors are supported here."
+msgstr ""
+
+#. An xpub reveals transaction history but grants no spending ability
+#: src/seedsigner/views/seed_views.py
+msgid "Anyone with this xpub can see all your transactions. It cannot spend your bitcoin."
+msgstr ""
+
+#. Menu entry for the preset that reduces how many questions the device asks
+#: src/seedsigner/views/settings_views.py
+msgid "Simple setup"
+msgstr ""
+
+#. Applies a preset that reduces the number of questions the device asks
+#: src/seedsigner/views/settings_views.py
+msgid "Use simple setup"
+msgstr ""
+
+#. Re-enables the full set of wallet options, so the device asks again
+#: src/seedsigner/views/settings_views.py
+msgid "Show all options"
+msgstr ""
+
+#: src/seedsigner/views/settings_views.py
+msgid "Simple setup is on: Single Sig, Native Segwit only. Show all options if you need multisig or other address types."
+msgstr ""
+
+#: src/seedsigner/views/settings_views.py
+msgid "Fewer questions when exporting to your wallet. Assumes a standard Single Sig, Native Segwit setup."
+msgstr ""
+
+#: src/seedsigner/views/settings_views.py
+msgid "Simple Setup"
+msgstr ""
+
+#. Create a new seed using randomness from a camera photo
+#: src/seedsigner/views/tools_views.py
+msgid "New seed (photo)"
+msgstr ""
+
+#. Create a new seed using randomness from dice rolls
+#: src/seedsigner/views/tools_views.py
+msgid "New seed (dice)"
+msgstr ""
+
+#. Calculate the checksum-carrying last word of a 12- or 24-word seed
+#: src/seedsigner/views/tools_views.py
+msgid "Calculate final word"
+msgstr ""
+
+#. Shown when the camera fails to collect enough frames for a new seed. "expected" and "actual" are the number of frames.
+#: src/seedsigner/views/tools_views.py
+msgid "Entropy collection failed. Expected {expected} preview frames, got {actual}"
+msgstr ""

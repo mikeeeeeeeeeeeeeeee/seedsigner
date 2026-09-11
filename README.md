@@ -90,9 +90,10 @@ measured and shortened rather than left clipped.
 Because those entries cannot live in upstream's translation repo, the submodule points at
 a fork of it. See [l10n/README.md](l10n/README.md).
 
-Also present: a partial **Klingon** catalog (`tlhIngan Hol`, Latin transliteration), 52 of
-420 strings using only attested vocabulary — the main menu reads juH / yIlegh / tIrmey /
-janmey / SeHlaw. Listed as `(incomplete)`; everything else —
+Also present: a partial **Klingon** catalog (`tlhIngan Hol`, Latin transliteration), 75 of
+420 strings built on attested vocabulary — the main menu reads juH / yIlegh / tIrmey /
+janmey / SeHlaw. The catalog header marks which choices are attested words, which are
+canonical word-building, and which are stretched to fit. Listed as `(incomplete)`; everything else —
 including every security warning — falls back to English. pIqaD is not possible without
 shipping a font for the Unicode Private Use Area.
 

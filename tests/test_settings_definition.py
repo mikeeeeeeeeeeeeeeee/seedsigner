@@ -35,3 +35,31 @@ class TestSettingsDefinition(BaseTest):
             # Recheck w/our mocked dir listing:
             detected_languages = [lang_tuple[0] for lang_tuple in SettingsConstants.get_detected_languages()]
             assert absent_language_code in detected_languages
+
+
+    def test__every_user_facing_setting_explains_itself(self):
+        """
+            Each setting the user can reach should carry help_text, which the settings
+            screen renders under its name. A setting that only shows a name like "Sig
+            types" or "Xpub QR format" tells a newcomer nothing.
+
+            `SettingsEntry` has carried this field all along; it was simply unused. This
+            test exists so that adding a setting without help text fails loudly rather
+            than quietly reintroducing the gap.
+        """
+        from seedsigner.models.settings_definition import SettingsDefinition
+
+        # The language picker has its own View (LocaleSelectionView), which never passes
+        # help_text to a Screen, and a list of languages in their own scripts needs no
+        # explaining.
+        exempt = {SettingsConstants.SETTING__LOCALE}
+
+        missing = [
+            entry.attr_name
+            for entry in SettingsDefinition.settings_entries
+            if entry.visibility != SettingsConstants.VISIBILITY__HIDDEN
+            and entry.attr_name not in exempt
+            and not entry.help_text
+        ]
+
+        assert missing == [], f"user-facing settings without help_text: {missing}"

@@ -224,6 +224,97 @@ class MainMenuView(View):
 
 
 
+class FirstStartView(View):
+    """
+        Shown once per boot, between the splash and the main menu.
+
+        Deliberately not persisted: seeds and (by default) settings do not survive a
+        power cycle either, so there is nowhere to record "already seen" without an SD
+        card. Once per session is the closest honest equivalent, and the cost to someone
+        who does not want it is a single button press, with CONTINUE preselected.
+    """
+    CONTINUE = ButtonOption("Continue")
+    GUIDE = ButtonOption("Quick guide")
+
+    def run(self):
+        from seedsigner.gui.screens.screen import TextIntroScreen
+
+        # Whatever the user picks, do not offer again for the rest of this session.
+        self.controller.has_offered_guide = True
+
+        button_data = [self.CONTINUE, self.GUIDE]
+        selected_menu_num = self.run_screen(
+            TextIntroScreen,
+            title=_("Welcome"),
+            text=_("New here? The quick guide covers the buttons and your first steps."),
+            show_back_button=False,
+            button_data=button_data,
+        )
+
+        if button_data[selected_menu_num] == self.GUIDE:
+            return Destination(GuideView, clear_history=True)
+
+        return Destination(MainMenuView, clear_history=True)
+
+
+
+@dataclass
+class GuideView(View):
+    """
+        A three-page primer. Reachable from the welcome screen and from Settings, so it
+        is not lost once dismissed.
+    """
+    NEXT = ButtonOption("Next")
+    DONE = ButtonOption("Done")
+
+    page_index: int = 0
+
+    # (title, body) per page. Kept to three: controls, the one surprising property of
+    # the device, and where to go next.
+    PAGES = [
+        (
+            _mft("Controls"),
+            # TRANSLATOR_NOTE: Explains the joystick and the back arrow
+            _mft("Move with the joystick, press it to select. Push left to reach the back arrow at the top."),
+        ),
+        (
+            _mft("Your Seed"),
+            # TRANSLATOR_NOTE: The device is stateless; the seed is not stored
+            _mft("This device forgets your seed when power is removed. Keep it on paper and load it again each time."),
+        ),
+        (
+            _mft("First Steps"),
+            # TRANSLATOR_NOTE: Names the three main menu entries
+            _mft("Seeds: load a seed you already have. Tools: create a new one. Scan: read a transaction to sign."),
+        ),
+    ]
+
+    def run(self):
+        from seedsigner.gui.screens.screen import TextIntroScreen
+
+        title, body = self.PAGES[self.page_index]
+        is_last_page = self.page_index == len(self.PAGES) - 1
+
+        button_data = [self.DONE if is_last_page else self.NEXT]
+        selected_menu_num = self.run_screen(
+            TextIntroScreen,
+            title=f"{_(title)} {self.page_index + 1}/{len(self.PAGES)}",
+            text=_(body),
+            button_data=button_data,
+        )
+
+        if selected_menu_num == RET_CODE__BACK_BUTTON:
+            if self.page_index == 0:
+                return Destination(MainMenuView, clear_history=True)
+            return Destination(GuideView, view_args=dict(page_index=self.page_index - 1))
+
+        if is_last_page:
+            return Destination(MainMenuView, clear_history=True)
+
+        return Destination(GuideView, view_args=dict(page_index=self.page_index + 1))
+
+
+
 class PowerOptionsView(View):
     RESET = ButtonOption("Restart", SeedSignerIconConstants.RESTART)
     POWER_OFF = ButtonOption("Power off", SeedSignerIconConstants.POWER)

@@ -602,6 +602,27 @@ class ButtonListScreen(BaseTopNavScreen):
 
 
 @dataclass
+class TextIntroScreen(ButtonListScreen):
+    """
+        Explanatory text above, choices below: the "here is what this is, what do you
+        want to do" shape used by the welcome/guide screens and by Simple Setup.
+    """
+    text: str = None
+    is_bottom_list: bool = True
+
+    def build_header_components(self) -> int:
+        self.components.append(TextArea(
+            text=self.text,
+            screen_y=self.top_nav.height + GUIConstants.COMPONENT_PADDING,
+            is_text_centered=True,
+            auto_line_break=True,
+        ))
+        last_component = self.components[-1]
+        return last_component.screen_y + last_component.height + GUIConstants.COMPONENT_PADDING
+
+
+
+@dataclass
 class LargeButtonScreen(BaseTopNavScreen):
     button_data: list = None
 

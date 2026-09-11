@@ -9,7 +9,7 @@ from seedsigner.models.seed import Seed
 from seedsigner.views import scan_views
 from seedsigner.views.psbt_views import PSBTSelectSeedView
 from seedsigner.views.seed_views import SeedBackupView, SeedMnemonicEntryView, SeedOptionsView, SeedsMenuView
-from seedsigner.views.view import Destination, MainMenuView, PowerOptionsView, UnhandledExceptionView, RemoveMicroSDWarningView, MainMenuView, View
+from seedsigner.views.view import Destination, FirstStartView, GuideView, MainMenuView, PowerOptionsView, UnhandledExceptionView, RemoveMicroSDWarningView, MainMenuView, View
 from seedsigner.views.tools_views import ToolsMenuView, ToolsCalcFinalWordNumWordsView
 from seedsigner.views.settings_views import SettingsEntryUpdateSelectionView
 from seedsigner.models.settings_definition import SettingsDefinition
@@ -240,3 +240,66 @@ class TestFlowTest(FlowTest):
 
         # Restore the setting for the controller
         controller.settings.set_value(settings_entry.attr_name, SettingsConstants.MICROSD_TOAST_TIMER_FIVE_SECONDS)
+
+class TestFirstStartFlows(FlowTest):
+    def test_first_start_offers_the_guide_once_per_boot(self):
+        """
+            A fresh boot routes to FirstStartView before the main menu, and does not
+            offer it a second time in the same session.
+        """
+        self.controller.has_offered_guide = False
+
+        self.run_sequence([
+            FlowStep(FirstStartView, button_data_selection=FirstStartView.CONTINUE),
+            FlowStep(MainMenuView),
+        ])
+        assert self.controller.has_offered_guide is True
+
+        # Second start in the same session goes straight to the main menu. `initial
+        # destination` is only passed when the sequence does not begin at MainMenuView,
+        # so this really exercises the Controller's own default routing.
+        self.run_sequence([
+            FlowStep(MainMenuView),
+        ])
+
+
+    def test_first_start_guide_runs_to_the_main_menu(self):
+        """ Taking the guide pages through to the end lands on the main menu. """
+        self.controller.has_offered_guide = False
+
+        self.run_sequence([
+            FlowStep(FirstStartView, button_data_selection=FirstStartView.GUIDE),
+            FlowStep(GuideView, button_data_selection=GuideView.NEXT),
+            FlowStep(GuideView, button_data_selection=GuideView.NEXT),
+            FlowStep(GuideView, button_data_selection=GuideView.DONE),
+            FlowStep(MainMenuView),
+        ])
+
+
+    def test_guide_is_reachable_from_settings(self):
+        """ The guide must not be lost once the one-time offer has been dismissed. """
+        from seedsigner.views import settings_views
+
+        self.run_sequence([
+            FlowStep(MainMenuView, button_data_selection=MainMenuView.SETTINGS),
+            FlowStep(settings_views.SettingsMenuView, button_data_selection=settings_views.SettingsMenuView.QUICK_GUIDE),
+            FlowStep(GuideView),
+        ])
+
+
+    def test_guide_back_button_steps_back_through_pages(self):
+        """ BACK walks back a page, and exits to the main menu from the first page. """
+        self.run_sequence([
+            FlowStep(GuideView, screen_return_value=RET_CODE__BACK_BUTTON),
+            FlowStep(MainMenuView),
+        ])
+
+        self.run_sequence(
+            initial_destination_view_args=dict(page_index=2),
+            sequence=[
+                FlowStep(GuideView, screen_return_value=RET_CODE__BACK_BUTTON),
+                FlowStep(GuideView, screen_return_value=RET_CODE__BACK_BUTTON),
+                FlowStep(GuideView, screen_return_value=RET_CODE__BACK_BUTTON),
+                FlowStep(MainMenuView),
+            ],
+        )

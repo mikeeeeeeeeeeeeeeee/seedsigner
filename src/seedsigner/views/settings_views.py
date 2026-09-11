@@ -3,7 +3,7 @@ from gettext import gettext as _
 
 from seedsigner.gui.components import GUIConstants, SeedSignerIconConstants
 from seedsigner.gui.screens import (RET_CODE__BACK_BUTTON, ButtonListScreen, settings_screens)
-from seedsigner.gui.screens.screen import ButtonOption
+from seedsigner.gui.screens.screen import ButtonOption, TextIntroScreen
 from seedsigner.models.settings import Settings, SettingsConstants, SettingsDefinition
 
 from .view import View, Destination, MainMenuView
@@ -13,6 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 class SettingsMenuView(View):
+    # TRANSLATOR_NOTE: Menu entry that reopens the short introduction shown at first start
+    QUICK_GUIDE = ButtonOption("Quick guide")
+
     # TRANSLATOR_NOTE: Menu entry for the preset that reduces how many questions the device asks
     SIMPLE_SETUP = ButtonOption("Simple setup")
     ADVANCED = ButtonOption("Advanced", right_icon_name=SeedSignerIconConstants.CHEVRON_RIGHT)
@@ -40,8 +43,9 @@ class SettingsMenuView(View):
         if self.visibility == SettingsConstants.VISIBILITY__GENERAL:
             title = _("Settings")
 
-            # Offered above "Advanced": it is the entry that makes the device ask less,
-            # so it belongs where a newcomer looks first.
+            # Offered above "Advanced": these are the entries that make the device ask
+            # less, so they belong where a newcomer looks first.
+            button_data.append(self.QUICK_GUIDE)
             button_data.append(self.SIMPLE_SETUP)
 
             # Set up the next nested level of menuing
@@ -96,7 +100,11 @@ class SettingsMenuView(View):
             else:
                 return Destination(SettingsMenuView, view_args={"visibility": SettingsConstants.VISIBILITY__ADVANCED})
         
-        if button_data[selected_menu_num] == self.SIMPLE_SETUP:
+        if button_data[selected_menu_num] == self.QUICK_GUIDE:
+            from seedsigner.views.view import GuideView
+            return Destination(GuideView)
+
+        elif button_data[selected_menu_num] == self.SIMPLE_SETUP:
             return Destination(SettingsSimpleSetupView)
 
         elif button_data[selected_menu_num] == self.ADVANCED:
@@ -190,9 +198,9 @@ class SettingsSimpleSetupView(View):
             description = _("Fewer questions when exporting to your wallet. Assumes a standard Single Sig, Native Segwit setup.")
 
         selected_menu_num = self.run_screen(
-            settings_screens.SettingsSimpleSetupScreen,
+            TextIntroScreen,
             title=_("Simple Setup"),
-            description=description,
+            text=description,
             button_data=button_data,
         )
 

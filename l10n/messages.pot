@@ -1850,3 +1850,43 @@ msgstr ""
 #: src/seedsigner/views/tools_views.py
 msgid "Entropy collection failed. Expected {expected} preview frames, got {actual}"
 msgstr ""
+
+#. Menu entry that reopens the short introduction shown at first start
+#: src/seedsigner/views/settings_views.py src/seedsigner/views/view.py
+msgid "Quick guide"
+msgstr ""
+
+#: src/seedsigner/views/view.py
+msgid "Controls"
+msgstr ""
+
+#. Explains the joystick and the back arrow
+#: src/seedsigner/views/view.py
+msgid "Move with the joystick, press it to select. Push left to reach the back arrow at the top."
+msgstr ""
+
+#: src/seedsigner/views/view.py
+msgid "Your Seed"
+msgstr ""
+
+#. The device is stateless; the seed is not stored
+#: src/seedsigner/views/view.py
+msgid "This device forgets your seed when power is removed. Keep it on paper and load it again each time."
+msgstr ""
+
+#: src/seedsigner/views/view.py
+msgid "First Steps"
+msgstr ""
+
+#. Names the three main menu entries
+#: src/seedsigner/views/view.py
+msgid "Seeds: load a seed you already have. Tools: create a new one. Scan: read a transaction to sign."
+msgstr ""
+
+#: src/seedsigner/views/view.py
+msgid "Welcome"
+msgstr ""
+
+#: src/seedsigner/views/view.py
+msgid "New here? The quick guide covers the buttons and your first steps."
+msgstr ""

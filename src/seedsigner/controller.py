@@ -135,6 +135,10 @@ class Controller(Singleton):
     FLOW__SIGN_MESSAGE = "sign_message"
     resume_main_flow: str = None
 
+    # Whether this session has already offered the first-start guide. In-memory only:
+    # nothing about a boot survives a power cycle, so neither does this.
+    has_offered_guide: bool = False
+
     back_stack: BackStack = None
     screensaver: ScreensaverScreen = None
     toast_notification_thread: BaseToastOverlayManagerThread = None
@@ -243,7 +247,7 @@ class Controller(Singleton):
             * initial_destination: The first View to run. If None, the MainMenuView is
             used. Only used by the test suite.
         """
-        from seedsigner.views import MainMenuView, BackStackView, RemoveMicroSDWarningView
+        from seedsigner.views import FirstStartView, MainMenuView, BackStackView, RemoveMicroSDWarningView
         from seedsigner.views.screensaver import OpeningSplashView
         from seedsigner.gui.toast import RemoveSDCardToastManagerThread
 
@@ -277,6 +281,9 @@ class Controller(Singleton):
         try:
             if initial_destination:
                 next_destination = initial_destination
+            elif not self.has_offered_guide:
+                # Offer the guide once per boot, then go straight to the main menu.
+                next_destination = Destination(FirstStartView)
             else:
                 next_destination = Destination(MainMenuView)
             

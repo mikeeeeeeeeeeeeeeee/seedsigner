@@ -84,6 +84,13 @@ class BaseTest:
         Controller._instance = None
         Controller.configure_instance()
 
+        # The first-start guide is offered once per boot, ahead of the main menu. Flow
+        # tests start the Controller directly and expect to land where their sequence
+        # begins, so mark it as already offered. Tests that exercise the guide clear
+        # this themselves. Set here rather than in setup_method() because several tests
+        # reset the Controller again mid-test.
+        Controller.get_instance().has_offered_guide = True
+
 
     def setup_method(self):
         """ Guarantee a clean/default Controller, Settings, & MicroSD state for each test case """

@@ -65,31 +65,6 @@ class SettingsEntryUpdateSelectionScreen(ButtonListScreen):
 
 
 @dataclass
-class SettingsSimpleSetupScreen(ButtonListScreen):
-    """
-        A plain "here is what this will do" screen: explanatory text above, choices
-        below.
-    """
-    description: str = None
-
-    def __post_init__(self):
-        self.is_bottom_list = True
-        super().__post_init__()
-
-
-    def build_header_components(self) -> int:
-        self.components.append(TextArea(
-            text=self.description,
-            screen_y=self.top_nav.height + GUIConstants.COMPONENT_PADDING,
-            is_text_centered=True,
-            auto_line_break=True,
-        ))
-        last_component = self.components[-1]
-        return last_component.screen_y + last_component.height + GUIConstants.COMPONENT_PADDING
-
-
-
-@dataclass
 class IOTestScreen(BaseTopNavScreen):
     def __post_init__(self):
         # TRANSLATOR_NOTE: Short for "Input/Output"; screen to make sure the buttons and camera are working properly

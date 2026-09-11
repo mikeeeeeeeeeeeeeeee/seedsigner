@@ -20,6 +20,15 @@ The practical consequence, and the thing that surprises most newcomers:
 malfunction. Every time you want to sign a transaction you load your seed again. Your
 seed lives on your paper or metal backup, never on the device.
 
+## The first screen
+
+On every power-on the device offers a **quick guide** — three screens covering the
+controls, the fact that it does not keep your seed, and where to start. *Continue* skips
+straight to the main menu.
+
+It is offered once per boot rather than once ever, because nothing about a boot is
+written to disk. You can reopen it any time under **Settings > Quick guide**.
+
 ## Controls
 
 The device has a five-way joystick and three buttons along the side.

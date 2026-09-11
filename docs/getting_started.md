@@ -101,7 +101,9 @@ is the only thing that catches it while you can still fix it.
 
 ## Loading a seed you already have
 
-**Seeds > Load a seed** gives you:
+Pick **Seeds** from the main menu. With nothing loaded yet it goes straight to the load
+options — there is no intermediate list to step through until you have a seed in memory.
+You get:
 
 - **Scan a SeedQR** — instant, if you previously made a SeedQR backup.
 - **Enter 12-word seed / Enter 24-word seed** — type the words. After a few letters the

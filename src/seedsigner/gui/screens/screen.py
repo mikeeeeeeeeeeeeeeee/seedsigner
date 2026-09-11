@@ -314,6 +314,10 @@ class ButtonListScreen(BaseTopNavScreen):
     # ensure the screen is at least scrolled to reveal the `selected_button`.
     scroll_y_initial_offset: int = None
 
+    # Vertical space kept free above the button list for the up scroll arrow (an 8px
+    # image drawn 12px above the list) when a subclass renders its own header content.
+    SCROLL_ARROW_RESERVE = 12
+
 
     def build_header_components(self) -> int:
         """
@@ -336,7 +340,15 @@ class ButtonListScreen(BaseTopNavScreen):
 
         # Subclasses may render their own content between the top nav and the button
         # list. The button list must never be placed on top of it.
-        self.content_top_y = self.build_header_components()
+        header_bottom_y = self.build_header_components()
+        if header_bottom_y > self.top_nav.height:
+            # The up scroll arrow is drawn in the gap just above the button list. With
+            # header content present that gap would otherwise land on top of it, so
+            # reserve the arrow's height here. Screens with no header content keep their
+            # original layout, where the arrow sits over the empty top nav margin.
+            self.content_top_y = header_bottom_y + self.SCROLL_ARROW_RESERVE
+        else:
+            self.content_top_y = header_bottom_y
         content_top_y = self.content_top_y
 
         button_height = GUIConstants.BUTTON_HEIGHT

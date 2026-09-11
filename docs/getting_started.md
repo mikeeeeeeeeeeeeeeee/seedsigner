@@ -41,15 +41,34 @@ input and the camera before trusting the device with a seed.
 
 ## Before your first seed
 
-Two settings are worth checking up front, both under **Settings**:
+Three settings are worth checking up front, all under **Settings**:
 
 - **Language** — pick yours if it is listed.
 - **Camera rotation** — if the camera preview appears upside down or sideways, change
   this. A misoriented camera makes QR scanning fail, and scanning is the only way to get
   data into the device.
+- **Simple setup** — recommended if this is your first hardware signing device. See
+  below.
 
 Everything else can stay at its defaults. In particular, leave **Bitcoin network** on
 Mainnet unless you deliberately want to practice with testnet coins.
+
+### Simple setup
+
+By default the device supports every wallet arrangement it knows about, and asks you
+which one you want at each step. Connecting to a wallet, for example, asks three
+questions in a row — signature type, script type, QR format — before it shows you
+anything.
+
+If you do not yet know what those mean, the answer is almost certainly "a standard
+single-signature wallet". **Settings > Simple setup** commits to that, and the three
+questions disappear because there is nothing left to choose.
+
+It changes nothing about your seed or your security — only which options the device
+offers you. The same screen restores every option later, and you can also change the
+individual settings by hand under **Settings > Advanced** at any time.
+
+Skip it if you already know you want multisig, Taproot, or a non-default address type.
 
 ## Creating a new seed
 
@@ -97,7 +116,9 @@ forever. They **cannot** spend your bitcoin with it. Treat an xpub as sensitive 
 catastrophic.
 
 If you do not know which options to pick, the defaults your wallet expects are usually
-Single Sig and Native Segwit. Your wallet's documentation is the authority here.
+Single Sig and Native Segwit — which is exactly what [Simple setup](#simple-setup)
+selects for you, removing the questions entirely. Your wallet's documentation is the
+authority here.
 
 ## Signing a transaction
 

@@ -281,9 +281,6 @@ class Controller(Singleton):
         try:
             if initial_destination:
                 next_destination = initial_destination
-            elif not self.has_offered_guide:
-                # Offer the guide once per boot, then go straight to the main menu.
-                next_destination = Destination(FirstStartView)
             else:
                 next_destination = Destination(MainMenuView)
             
@@ -292,6 +289,15 @@ class Controller(Singleton):
                 self.activate_toast(RemoveSDCardToastManagerThread())
             elif self.settings.get_value(SettingsConstants.SETTING__MICROSD_TOAST_TIMER) == SettingsConstants.MICROSD_TOAST_TIMER_FOREVER:
                 next_destination = Destination(RemoveMicroSDWarningView)
+
+            # Offer the first-start guide ahead of the main menu, but never ahead of a
+            # blocking hardware prompt: removing the SD card is a requirement, the guide
+            # is an offer. Checked last so the precedence is explicit rather than a
+            # consequence of assignment order. With the "Until SD removed" setting the
+            # guide is therefore not offered this boot; Settings > Quick guide still
+            # reaches it.
+            if not initial_destination and not self.has_offered_guide and next_destination.View_cls == MainMenuView:
+                next_destination = Destination(FirstStartView)
 
             while True:
                 # Destination(None) is a special case; render the Home screen

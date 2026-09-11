@@ -611,6 +611,10 @@ class TextIntroScreen(ButtonListScreen):
     is_bottom_list: bool = True
 
     def build_header_components(self) -> int:
+        if not self.text:
+            # Nothing to render; behave like a plain ButtonListScreen.
+            return self.top_nav.height
+
         self.components.append(TextArea(
             text=self.text,
             screen_y=self.top_nav.height + GUIConstants.COMPONENT_PADDING,

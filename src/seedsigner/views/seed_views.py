@@ -867,7 +867,8 @@ class SeedExportXpubWarningView(View):
         selected_menu_num = self.run_screen(
             WarningScreen,
             status_headline=_("Privacy Leak!"),
-            text=_("Xpub can be used to view all future transactions."),
+            # TRANSLATOR_NOTE: An xpub reveals transaction history but grants no spending ability
+            text=_("Anyone with this xpub can see all your transactions. It cannot spend your bitcoin."),
         )
 
         if selected_menu_num == 0:

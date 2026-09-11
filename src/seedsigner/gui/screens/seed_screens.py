@@ -563,7 +563,8 @@ class SeedWordsBackupTestPromptScreen(ButtonListScreen):
         super().__post_init__()
 
         self.components.append(TextArea(
-            text=_("Optionally verify that your mnemonic backup is correct."),
+            # TRANSLATOR_NOTE: Urges the user to check the seed words they just wrote down
+            text=_("Check the words you wrote down. An incorrect backup means lost funds."),
             screen_y=self.top_nav.height,
             is_text_centered=True,
         ))

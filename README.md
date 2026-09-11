@@ -23,6 +23,8 @@ Aimed at making the device less intimidating for first-time users:
 * **German throughout** — the new and changed strings are translated, not left in English.
 * **Fixed** a layout bug where settings with several options drew the button list over
   their own title.
+* **Runs on a normal computer** — `python tools/emulator.py` opens the device in a
+  window, so you can try the flows before buying any hardware.
 
 <details>
 <summary><b>In detail</b></summary>
@@ -103,6 +105,12 @@ shipping a font for the Unicode Private Use Area.
   text colliding with a button list — that is how the layout bug above was found.
 * `tools/check_translations.py` reports (and can append) strings missing from
   `l10n/messages.pot` without needing Babel.
+* `tools/emulator.py` runs the app on a laptop, in a window. Only the three edges that
+  need a Raspberry Pi are replaced — the GPIO pin reads, the display driver and the
+  camera. Everything else is the real code, `HardwareButtons`' debounce and repeat logic
+  included, so a screen looks and behaves the way it does on the device. It also has a
+  `--headless` mode that saves frames as PNGs and can replay a key sequence, which is
+  how it is tested.
 
 Every UI change was rendered at 240x240 and inspected before committing.
 
@@ -495,3 +503,26 @@ for d in */; do msgfmt -o "${d}LC_MESSAGES/messages.mo" "${d}LC_MESSAGES/message
 
 A fresh clone detects 1 language before step 2 and 23 after it. CI does both already
 (`submodules: recursive`, then `compile_catalog`).
+
+### Running it without hardware
+
+`tools/emulator.py` runs the app on Linux, macOS or Windows and draws the 240x240
+display in a window:
+
+```bash
+pip install embit Pillow qrcode urtypes
+python tools/emulator.py
+```
+
+Arrow keys are the joystick, Enter or Space presses it, `1` `2` `3` are the three side
+buttons, Esc quits. There is no separate "back" key, because the device has none: you
+reach the `<` in the top bar by pressing the joystick left, exactly as you would on the
+real thing.
+
+Needs Tkinter, which ships with the python.org and Windows builds of Python; on
+Debian/Ubuntu install `python3-tk`. Do step 2 above first if you want a language other
+than English (`--locale de`).
+
+The camera is the one thing that is not emulated. Anything that scans reports "Cannot
+access camera" — the app's own screen for a disconnected camera — so the scanning flows
+cannot be exercised here.

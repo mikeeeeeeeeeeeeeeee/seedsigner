@@ -7,6 +7,14 @@ installation.
 > This document is part of an unofficial fork. See the warning at the top of the
 > [README](../README.md).
 
+## Trying it before you build one
+
+You do not need the hardware to see what any of this looks like. From a clone of this
+fork, `python tools/emulator.py` opens the device in a window on your computer — arrow
+keys for the joystick, Enter to select. Every menu, every warning and every flow in this
+guide is there, apart from anything that needs the camera. The
+[README](../README.md#running-it-without-hardware) has the details.
+
 ## What SeedSigner is
 
 SeedSigner is a *stateless* signing device. It holds your seed in memory only while
@@ -178,6 +186,7 @@ seed. This catches malware that swaps the address displayed by your computer.
 ## Where to get help
 
 - [Project README](../README.md) for hardware, builds and verification
+- `python tools/emulator.py` to rehearse a flow on your computer first
 - [SeedSigner.com](https://seedsigner.com)
 - The upstream project's [Telegram group](https://t.me/joinchat/GHNuc_nhNQjLPWsS)
 

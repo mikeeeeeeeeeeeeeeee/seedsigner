@@ -694,19 +694,31 @@ class PSBTChangeDetailsScreen(ButtonListScreen):
             max_lines=1,
         ))
 
-        if self.is_change_addr_verified:
-            # How much empty space is left between the bottom of the addr and the first button?
-            available_y = self.buttons[0].screen_y - (self.components[-1].screen_y + self.components[-1].height)
+        # How much empty space is left between the bottom of the addr and the first button?
+        available_y = self.buttons[0].screen_y - (self.components[-1].screen_y + self.components[-1].height)
 
-            self.components.append(IconTextLine(
-                icon_name=SeedSignerIconConstants.SUCCESS,
-                icon_color=GUIConstants.SUCCESS_COLOR,
-                value_text=_("Address verified!"),
-                is_text_centered=True,
-                screen_x=GUIConstants.EDGE_PADDING,
-                screen_y=self.components[-1].screen_y + self.components[-1].height,
-                height=available_y,  # Let the component auto-center vertically
-            ))
+        if self.is_change_addr_verified:
+            icon_name = SeedSignerIconConstants.SUCCESS
+            icon_color = GUIConstants.SUCCESS_COLOR
+            value_text = _("Address verified!")
+        else:
+            # State the unverified case outright. Reached when a multisig change address
+            # cannot be checked because no wallet descriptor is loaded; a missing green
+            # checkmark is too quiet a signal for the one screen that catches fake change.
+            icon_name = SeedSignerIconConstants.WARNING
+            icon_color = GUIConstants.WARNING_COLOR
+            # TRANSLATOR_NOTE: The change address could not be checked against a wallet descriptor
+            value_text = _("Not verified")
+
+        self.components.append(IconTextLine(
+            icon_name=icon_name,
+            icon_color=icon_color,
+            value_text=value_text,
+            is_text_centered=True,
+            screen_x=GUIConstants.EDGE_PADDING,
+            screen_y=self.components[-1].screen_y + self.components[-1].height,
+            height=available_y,  # Let the component auto-center vertically
+        ))
 
 
 
@@ -764,6 +776,8 @@ class PSBTOpReturnScreen(ButtonListScreen):
 
 @dataclass
 class PSBTFinalizeScreen(ButtonListScreen):
+    fingerprint: str = None
+
     def __post_init__(self):
         # Customize defaults
         self.title = _("Sign Transaction")
@@ -780,6 +794,19 @@ class PSBTFinalizeScreen(ButtonListScreen):
         self.components.append(icon)
 
         self.components.append(TextArea(
-            text=_("Click to approve this transaction"),
+            # TRANSLATOR_NOTE: Names the effect of the button below, not the click itself
+            text=_("Approving signs this transaction"),
             screen_y=icon.screen_y + icon.height + 2*GUIConstants.COMPONENT_PADDING
         ))
+
+        if self.fingerprint:
+            # Which seed is about to sign. Matters whenever more than one is loaded, and
+            # is the value the user can cross-check against their wallet.
+            prev_component = self.components[-1]
+            self.components.append(IconTextLine(
+                icon_name=SeedSignerIconConstants.FINGERPRINT,
+                icon_color=GUIConstants.INFO_COLOR,
+                value_text=self.fingerprint,
+                is_text_centered=True,
+                screen_y=prev_component.screen_y + prev_component.height + GUIConstants.COMPONENT_PADDING,
+            ))

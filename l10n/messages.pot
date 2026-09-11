@@ -1898,3 +1898,13 @@ msgstr ""
 #: src/seedsigner/views/psbt_views.py
 msgid "An output of this transaction names a different wallet than the seed you are signing with."
 msgstr ""
+
+#. The change address could not be checked against a wallet descriptor
+#: src/seedsigner/gui/screens/psbt_screens.py
+msgid "Not verified"
+msgstr ""
+
+#. Names the effect of the button below, not the click itself
+#: src/seedsigner/gui/screens/psbt_screens.py
+msgid "Approving signs this transaction"
+msgstr ""

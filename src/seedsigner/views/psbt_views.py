@@ -647,7 +647,8 @@ class PSBTFinalizeView(View):
         
         selected_menu_num = self.run_screen(
             PSBTFinalizeScreen,
-            button_data=[self.APPROVE_PSBT]
+            button_data=[self.APPROVE_PSBT],
+            fingerprint=self.controller.psbt_seed.get_fingerprint(self.settings.get_value(SettingsConstants.SETTING__NETWORK)),
         )
 
         if selected_menu_num == RET_CODE__BACK_BUTTON:

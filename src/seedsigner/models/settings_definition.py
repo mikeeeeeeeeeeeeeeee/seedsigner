@@ -585,6 +585,18 @@ class SettingsDefinition:
                       type=SettingsConstants.TYPE__SELECT_1,
                       selection_options=SettingsConstants.ALL_BTC_DENOMINATIONS,
                       default_value=SettingsConstants.BTC_DENOMINATION__THRESHOLD),
+
+        # A misoriented camera makes QR scanning -- the device's primary input -- fail
+        # outright, so this stays at the top level rather than nested under "Advanced".
+        SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
+                      attr_name=SettingsConstants.SETTING__CAMERA_ROTATION,
+                      abbreviated_name="camera",
+                      display_name=_mft("Camera rotation"),
+                      # TRANSLATOR_NOTE: Use this if the camera preview appears upside down or sideways
+                      help_text=_mft("Fix an upside-down camera preview"),
+                      type=SettingsConstants.TYPE__SELECT_1,
+                      selection_options=SettingsConstants.ALL_CAMERA_ROTATIONS,
+                      default_value=SettingsConstants.CAMERA_ROTATION__180),
      
 
         # Advanced options
@@ -660,17 +672,6 @@ class SettingsDefinition:
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       selection_options=SettingsConstants.OPTIONS__ENABLED_DISABLED_REQUIRED,
                       default_value=SettingsConstants.OPTION__ENABLED),
-
-        SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
-                      attr_name=SettingsConstants.SETTING__CAMERA_ROTATION,
-                      abbreviated_name="camera",
-                      display_name=_mft("Camera rotation"),
-                      # TRANSLATOR_NOTE: Use this if the camera preview appears upside down or sideways
-                      help_text=_mft("Fix an upside-down camera preview"),
-                      type=SettingsConstants.TYPE__SELECT_1,
-                      visibility=SettingsConstants.VISIBILITY__ADVANCED,
-                      selection_options=SettingsConstants.ALL_CAMERA_ROTATIONS,
-                      default_value=SettingsConstants.CAMERA_ROTATION__180),
 
         SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
                       attr_name=SettingsConstants.SETTING__COMPACT_SEEDQR,

@@ -60,6 +60,14 @@ jobs:
           pip install -e .
       - name: Compile translations
         run: python setup.py compile_catalog
+      - name: Check for untranslatable strings
+        # Fails when a string in src/ has no catalog entry, i.e. cannot be translated.
+        # Entries left over for strings the code dropped are reported but do not fail.
+        run: python tools/check_translations.py
+      - name: Check screen layouts
+        # Renders every screen the screenshot generator knows and fails on text that
+        # collides with a button list. Purely geometric damage that pytest cannot see.
+        run: python tools/check_screen_layout.py
       - name: Test with pytest
         run: |
           mkdir -p artifacts

@@ -20,8 +20,13 @@ Why this exists:
     source of truth; run it when you can.
 
 Usage:
-    python tools/check_translations.py           # report only; exits 1 if out of date
+    python tools/check_translations.py           # report; exits 1 only if entries are MISSING
     python tools/check_translations.py --append  # append the missing entries to the .pot
+
+Exit status is driven by missing entries alone: a string in the code with no catalog
+entry cannot be translated, which is a defect. Entries left in the catalog for strings
+the code no longer uses are inert -- gettext never looks them up -- so they are reported
+but do not fail, which lets this run as a CI gate.
 
 What it mirrors from setup.cfg:
     keywords     = _ _mft mark_for_translation ButtonOption
@@ -214,7 +219,7 @@ def main() -> int:
                 print(f"      note: {comment}")
 
     if obsolete:
-        print(f"\nIn the catalog but no longer in src/ ({len(obsolete)}):")
+        print(f"\nIn the catalog but no longer in src/ ({len(obsolete)}) -- inert, not an error:")
         for msgid in obsolete:
             print(f"  {msgid!r}")
 
@@ -231,7 +236,8 @@ def main() -> int:
         print("Obsolete entries are left alone; run Babel's extract_messages to prune them.")
         return 0
 
-    return 1
+    # Obsolete entries alone are not a failure; see the note at the top of this file.
+    return 1 if missing else 0
 
 
 if __name__ == "__main__":

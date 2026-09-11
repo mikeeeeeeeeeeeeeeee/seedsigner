@@ -23,6 +23,73 @@ Aimed at making the device less intimidating for first-time users:
 * **Fixed** a layout bug where settings with several options drew the button list over
   their own title.
 
+<details>
+<summary><b>In detail</b></summary>
+
+#### Fewer decisions to make
+
+* The xpub export asked three questions in a row — signature type, script type, QR
+  format — before showing anything. Each of those screens already skipped itself when
+  its setting had a single option, so narrowing the three settings removes all three
+  prompts without touching any flow logic. That is what *Simple setup* does, and it is
+  now the shipped state. *Show all options* puts upstream's full set back.
+* **Camera rotation** moved from *Settings > Advanced* to the top level. A sideways
+  camera makes QR scanning fail, and scanning is the device's only input — so the fix
+  should not be two levels deep.
+
+#### Plain language
+
+* 21 of the 22 user-facing settings now carry on-screen help text, up from two. The
+  `SettingsEntry` field and its rendering already existed; almost nothing used it. (The
+  exception is the language picker, which has its own screen.)
+* The Tools menu had **two entries both labelled "New seed"**, told apart only by their
+  icon; they are now *New seed (photo)* and *New seed (dice)*. "Calc 12th/24th word"
+  became *Calculate final word*.
+* Scanning the wrong kind of QR reported the decoder's internal type — `Expected a
+  SeedQR, received "psbt: ur2" format`. It now reads *Expected a SeedQR, but scanned a
+  transaction.*
+* Warnings say what follows from them: the xpub warning now notes that an xpub cannot
+  spend, and the backup check no longer opens with "Optionally verify…" — the one step
+  that catches a mis-transcribed seed.
+* The seed fingerprint is labelled, and the power-off screen mentions that loaded seeds
+  are erased with it.
+
+#### First start
+
+A skippable welcome screen offers a three-page guide: controls, the fact that the device
+does not keep your seed, and where to begin. It is offered once per boot rather than once
+ever — persistent settings are off by default and need an SD card, so there is nowhere
+honest to record "already seen". Reopen it under *Settings > Quick guide*.
+
+#### Signing safety
+
+* A change output that **provably derives from your seed but is labelled with another
+  wallet's fingerprint** is now refused as a suspicious transaction. It previously
+  reached a screen reading "This is still on our to-do list!". The state is reachable:
+  change is detected by re-deriving the script, and the ownership check deliberately
+  ignores derivations naming another wallet.
+* A multisig change address that could not be verified rendered **nothing at all**, while
+  a verified one gets a green checkmark. The unverified case now says *Not verified*.
+* The final approval screen names its effect and shows **which seed will sign**.
+
+#### Bugs found along the way
+
+* Settings with enough options drew their button list on top of their own name and help
+  text. "Script types" (five options) was hiding its own title before any change here.
+* Three `logger.warning()` calls meant to name an oversized button label were not
+  f-strings, so they always logged the literal `{self.text}`.
+
+#### Developer tooling
+
+* `tools/check_screen_layout.py` renders all 157 screens and reports text colliding with
+  a button list — that is how the layout bug above was found.
+* `tools/check_translations.py` reports (and can append) strings missing from
+  `l10n/messages.pot` without needing Babel.
+
+Every UI change was rendered at 240x240 and inspected before committing.
+
+</details>
+
 # Build an offline, airgapped Bitcoin signing device for less than $50!
 
 ![Image of SeedSigners in Mini Pill Enclosures](docs/img/Mini_Pill_Main_Photo.jpg)

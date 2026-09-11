@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 class SettingsMenuView(View):
+    # TRANSLATOR_NOTE: Menu entry for the preset that reduces how many questions the device asks
+    SIMPLE_SETUP = ButtonOption("Simple setup")
     ADVANCED = ButtonOption("Advanced", right_icon_name=SeedSignerIconConstants.CHEVRON_RIGHT)
     HARDWARE = ButtonOption("Hardware", right_icon_name=SeedSignerIconConstants.CHEVRON_RIGHT)
     IO_TEST = ButtonOption("I/O test")
@@ -37,6 +39,10 @@ class SettingsMenuView(View):
 
         if self.visibility == SettingsConstants.VISIBILITY__GENERAL:
             title = _("Settings")
+
+            # Offered above "Advanced": it is the entry that makes the device ask less,
+            # so it belongs where a newcomer looks first.
+            button_data.append(self.SIMPLE_SETUP)
 
             # Set up the next nested level of menuing
             button_data.append(self.ADVANCED)
@@ -90,7 +96,10 @@ class SettingsMenuView(View):
             else:
                 return Destination(SettingsMenuView, view_args={"visibility": SettingsConstants.VISIBILITY__ADVANCED})
         
-        if button_data[selected_menu_num] == self.ADVANCED:
+        if button_data[selected_menu_num] == self.SIMPLE_SETUP:
+            return Destination(SettingsSimpleSetupView)
+
+        elif button_data[selected_menu_num] == self.ADVANCED:
             return next_destination
 
         elif button_data[selected_menu_num] == self.HARDWARE:
@@ -110,6 +119,75 @@ class SettingsMenuView(View):
 
         else:
             return Destination(SettingsEntryUpdateSelectionView, view_args=dict(attr_name=settings_entries[selected_menu_num].attr_name, parent_initial_scroll=initial_scroll))
+
+
+
+class SettingsSimpleSetupView(View):
+    """
+        One-step preset that removes the option prompts a newcomer cannot answer.
+
+        Exporting an xpub asks for a signature type, then a script type, then a QR
+        format -- three consecutive questions in wallet jargon, before anything happens.
+        Each of those Views already skips itself when its setting has just one option
+        enabled, so narrowing those three settings to the single most common choice
+        removes all three prompts without touching any flow logic.
+
+        Reversible: the same screen offers to restore the shipped defaults.
+    """
+    # TRANSLATOR_NOTE: Applies a preset that reduces the number of questions the device asks
+    APPLY = ButtonOption("Use simple setup")
+
+    # TRANSLATOR_NOTE: Undoes the simple setup preset, re-enabling every option
+    RESTORE = ButtonOption("Restore all options")
+
+    # The most widely supported choice for each setting. Single sig + Native Segwit is
+    # what a typical modern single-signature wallet expects, and the UR "crypto-account"
+    # QR is the format the settings list itself labels as the default.
+    SIMPLE_VALUES = {
+        SettingsConstants.SETTING__SIG_TYPES: [SettingsConstants.SINGLE_SIG],
+        SettingsConstants.SETTING__SCRIPT_TYPES: [SettingsConstants.NATIVE_SEGWIT],
+        SettingsConstants.SETTING__XPUB_QR_FORMAT: [SettingsConstants.XPUB_QR_FORMAT__UR_CRYPTO_ACCOUNT],
+    }
+
+
+    @property
+    def is_simple_setup_active(self) -> bool:
+        """ True when every managed setting is already narrowed to its simple value. """
+        return all(
+            sorted(self.settings.get_value(attr_name)) == sorted(value)
+            for attr_name, value in self.SIMPLE_VALUES.items()
+        )
+
+
+    def run(self):
+        if self.is_simple_setup_active:
+            button_data = [self.RESTORE]
+            description = _("Simple setup is on: Single Sig, Native Segwit only. Restore to get every option back.")
+        else:
+            button_data = [self.APPLY]
+            description = _("Fewer questions when exporting to your wallet. Assumes a standard Single Sig, Native Segwit setup.")
+
+        selected_menu_num = self.run_screen(
+            settings_screens.SettingsSimpleSetupScreen,
+            title=_("Simple Setup"),
+            description=description,
+            button_data=button_data,
+        )
+
+        if selected_menu_num == RET_CODE__BACK_BUTTON:
+            return Destination(SettingsMenuView)
+
+        if button_data[selected_menu_num] == self.APPLY:
+            for attr_name, value in self.SIMPLE_VALUES.items():
+                # Copy: the settings store must not alias our class-level lists.
+                self.settings.set_value(attr_name, list(value))
+
+        elif button_data[selected_menu_num] == self.RESTORE:
+            for attr_name in self.SIMPLE_VALUES:
+                default_value = SettingsDefinition.get_settings_entry(attr_name).default_value
+                self.settings.set_value(attr_name, list(default_value))
+
+        return Destination(SettingsMenuView, clear_history=True)
 
 
 

@@ -155,3 +155,100 @@ class TestSettingsFlows(FlowTest):
             load_settingsqr_into_decoder=load_persistent_settingsqr_into_decoder,
             expected_setting_state=SettingsConstants.OPTION__DISABLED
         )
+
+
+    def test_simple_setup_collapses_the_xpub_export_prompts(self):
+        """
+            Applying Simple Setup should narrow the three multiselect settings that drive
+            the xpub export flow, so that all three of its option prompts skip themselves.
+
+            This is the whole point of the preset: fewer questions, same destination.
+        """
+        from seedsigner.models.seed import Seed
+        from seedsigner.views import seed_views
+
+        seed = Seed(mnemonic="blush twice taste dawn feed second opinion lazy thumb play neglect impact".split())
+        self.controller.storage.set_pending_seed(seed)
+        self.controller.storage.finalize_pending_seed()
+
+        # With the shipped defaults, each of the three Views renders its own prompt.
+        assert len(self.settings.get_value(SettingsConstants.SETTING__SIG_TYPES)) > 1
+        assert len(self.settings.get_value(SettingsConstants.SETTING__SCRIPT_TYPES)) > 1
+        assert len(self.settings.get_value(SettingsConstants.SETTING__XPUB_QR_FORMAT)) > 1
+
+        # Walk the whole flow to prove each of the three Views really renders a prompt:
+        # a View that redirected instead of running its Screen would raise here.
+        native_segwit = ButtonOption(
+            dict(SettingsConstants.ALL_SCRIPT_TYPES)[SettingsConstants.NATIVE_SEGWIT],
+            return_data=SettingsConstants.NATIVE_SEGWIT,
+        )
+        animated_qr = ButtonOption(
+            dict(SettingsConstants.ALL_XPUB_QR_FORMATS)[SettingsConstants.XPUB_QR_FORMAT__UR_CRYPTO_ACCOUNT],
+            return_data=SettingsConstants.XPUB_QR_FORMAT__UR_CRYPTO_ACCOUNT,
+        )
+        self.run_sequence(
+            initial_destination_view_args=dict(seed=seed),
+            sequence=[
+                FlowStep(seed_views.SeedOptionsView, button_data_selection=seed_views.SeedOptionsView.EXPORT_XPUB),
+                FlowStep(seed_views.SeedExportXpubSigTypeView, button_data_selection=seed_views.SeedExportXpubSigTypeView.SINGLE_SIG),
+                FlowStep(seed_views.SeedExportXpubScriptTypeView, button_data_selection=native_segwit),
+                FlowStep(seed_views.SeedExportXpubQRFormatView, button_data_selection=animated_qr),
+                FlowStep(seed_views.SeedExportXpubWarningView, screen_return_value=0),
+                FlowStep(seed_views.SeedExportXpubDetailsView, screen_return_value=0),
+                FlowStep(seed_views.SeedExportXpubQRDisplayView, screen_return_value=0),
+                FlowStep(MainMenuView),
+            ],
+        )
+
+        # Apply the preset from the Settings menu.
+        self.run_sequence([
+            FlowStep(MainMenuView, button_data_selection=MainMenuView.SETTINGS),
+            FlowStep(settings_views.SettingsMenuView, button_data_selection=settings_views.SettingsMenuView.SIMPLE_SETUP),
+            FlowStep(settings_views.SettingsSimpleSetupView, button_data_selection=settings_views.SettingsSimpleSetupView.APPLY),
+            FlowStep(settings_views.SettingsMenuView),
+        ])
+
+        assert self.settings.get_value(SettingsConstants.SETTING__SIG_TYPES) == [SettingsConstants.SINGLE_SIG]
+        assert self.settings.get_value(SettingsConstants.SETTING__SCRIPT_TYPES) == [SettingsConstants.NATIVE_SEGWIT]
+        assert self.settings.get_value(SettingsConstants.SETTING__XPUB_QR_FORMAT) == [SettingsConstants.XPUB_QR_FORMAT__UR_CRYPTO_ACCOUNT]
+
+        # Now all three prompts skip themselves: `is_redirect` asserts that the View
+        # routed onward *without* ever rendering a Screen.
+        self.run_sequence(
+            initial_destination_view_args=dict(seed=seed),
+            sequence=[
+                FlowStep(seed_views.SeedOptionsView, button_data_selection=seed_views.SeedOptionsView.EXPORT_XPUB),
+                FlowStep(seed_views.SeedExportXpubSigTypeView, is_redirect=True),
+                FlowStep(seed_views.SeedExportXpubScriptTypeView, is_redirect=True),
+                FlowStep(seed_views.SeedExportXpubQRFormatView, is_redirect=True),
+                FlowStep(seed_views.SeedExportXpubWarningView, screen_return_value=0),
+                FlowStep(seed_views.SeedExportXpubDetailsView, screen_return_value=0),
+                FlowStep(seed_views.SeedExportXpubQRDisplayView, screen_return_value=0),
+                FlowStep(MainMenuView),
+            ],
+        )
+
+
+    def test_simple_setup_is_reversible(self):
+        """ Restoring from Simple Setup should put every managed setting back to its shipped default. """
+        defaults = {
+            attr_name: SettingsDefinition.get_settings_entry(attr_name).default_value
+            for attr_name in settings_views.SettingsSimpleSetupView.SIMPLE_VALUES
+        }
+
+        def apply_preset(button_option):
+            self.run_sequence([
+                FlowStep(MainMenuView, button_data_selection=MainMenuView.SETTINGS),
+                FlowStep(settings_views.SettingsMenuView, button_data_selection=settings_views.SettingsMenuView.SIMPLE_SETUP),
+                FlowStep(settings_views.SettingsSimpleSetupView, button_data_selection=button_option),
+                FlowStep(settings_views.SettingsMenuView),
+            ])
+
+        apply_preset(settings_views.SettingsSimpleSetupView.APPLY)
+        for attr_name, value in settings_views.SettingsSimpleSetupView.SIMPLE_VALUES.items():
+            assert self.settings.get_value(attr_name) == value
+
+        # The screen now offers RESTORE instead of APPLY
+        apply_preset(settings_views.SettingsSimpleSetupView.RESTORE)
+        for attr_name, default_value in defaults.items():
+            assert self.settings.get_value(attr_name) == default_value

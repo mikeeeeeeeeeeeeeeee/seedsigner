@@ -99,8 +99,8 @@ shipping a font for the Unicode Private Use Area.
 
 #### Developer tooling
 
-* `tools/check_screen_layout.py` renders all 157 screens and reports text colliding with
-  a button list — that is how the layout bug above was found.
+* `tools/check_screen_layout.py` renders every screen the generator knows and reports
+  text colliding with a button list — that is how the layout bug above was found.
 * `tools/check_translations.py` reports (and can append) strings missing from
   `l10n/messages.pot` without needing Babel.
 

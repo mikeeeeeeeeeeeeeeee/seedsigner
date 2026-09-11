@@ -42,7 +42,7 @@ from seedsigner.models.qr_type import QRType
 from seedsigner.models.seed import Seed
 from seedsigner.models.settings import Settings
 from seedsigner.models.settings_definition import SettingsConstants, SettingsDefinition
-from seedsigner.views import (MainMenuView, PowerOptionsView, RestartView, RemoveMicroSDWarningView, NotYetImplementedView, UnhandledExceptionView, 
+from seedsigner.views import (FirstStartView, GuideView, MainMenuView, PowerOptionsView, RestartView, RemoveMicroSDWarningView, NotYetImplementedView, UnhandledExceptionView, 
     psbt_views, seed_views, settings_views, tools_views, scan_views)
 from seedsigner.views.screensaver import OpeningSplashView
 from seedsigner.views.view import CameraConnectionErrorView, NetworkMismatchErrorView, OptionDisabledView, PowerOffView
@@ -279,6 +279,26 @@ def generate_screenshots(locale):
 
 
         @contextmanager
+        def mock_simple_setup_active():
+            """
+            setup_screenshots() widens every wallet option, which is the state where
+            SettingsSimpleSetupView offers to apply the preset. Narrow them back to
+            capture the other half of that screen.
+            """
+            previous = {
+                attr_name: controller.settings.get_value(attr_name)
+                for attr_name in settings_views.SettingsSimpleSetupView.SIMPLE_VALUES
+            }
+            for attr_name, value in settings_views.SettingsSimpleSetupView.SIMPLE_VALUES.items():
+                controller.settings.set_value(attr_name, list(value))
+            try:
+                yield
+            finally:
+                for attr_name, value in previous.items():
+                    controller.settings.set_value(attr_name, list(value))
+
+
+        @contextmanager
         def mock_single_sig_psbt_loaded():
             with mock_load_psbt(BASE64_SINGLE_SIG_PSBT):
                 yield
@@ -371,6 +391,10 @@ def generate_screenshots(locale):
                 ScreenshotConfig(PowerOptionsView),
                 ScreenshotConfig(RestartView),
                 ScreenshotConfig(PowerOffView),
+                ScreenshotConfig(FirstStartView),
+                ScreenshotConfig(GuideView, dict(page_index=0), screenshot_name="GuideView_1_controls"),
+                ScreenshotConfig(GuideView, dict(page_index=1), screenshot_name="GuideView_2_your_seed"),
+                ScreenshotConfig(GuideView, dict(page_index=2), screenshot_name="GuideView_3_first_steps"),
             ],
             "Seed Views": [
                 ScreenshotConfig(seed_views.SeedsMenuView),
@@ -490,6 +514,8 @@ def generate_screenshots(locale):
                 ScreenshotConfig(settings_views.SettingsIngestSettingsQRView, dict(data=settingsqr_data_persistent),     screenshot_name="SettingsIngestSettingsQRView_persistent"),
                 ScreenshotConfig(settings_views.SettingsIngestSettingsQRView, dict(data=settingsqr_data_not_persistent), screenshot_name="SettingsIngestSettingsQRView_not_persistent"),
                 ScreenshotConfig(settings_views.SettingsSelectionRequiredWarningView, dict(attr_name=SettingsConstants.SETTING__SCRIPT_TYPES)),
+                ScreenshotConfig(settings_views.SettingsSimpleSetupView, screenshot_name="SettingsSimpleSetupView_offer"),
+                ScreenshotConfig(settings_views.SettingsSimpleSetupView, screenshot_name="SettingsSimpleSetupView_active", mock_context_manager=mock_simple_setup_active),
             ],
             "Misc Error Views": [
                 ScreenshotConfig(NotYetImplementedView),

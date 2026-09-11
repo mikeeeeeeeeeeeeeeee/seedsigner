@@ -1405,7 +1405,7 @@ class Button(BaseComponent):
             self.visible_text_width = self.width - 2*GUIConstants.COMPONENT_PADDING
 
             if self.text_width > self.visible_text_width and not self.is_scrollable_text:
-                logger.warning("Button label \"{self.text}\" will not fit but is_scrollable_text is False")
+                logger.warning(f"Button label \"{self.text}\" will not fit but is_scrollable_text is False")
 
             if self.is_text_centered and self.text_width < self.visible_text_width:
                 # self.text_x = int(self.width/2)
@@ -1444,7 +1444,7 @@ class Button(BaseComponent):
                     self.text_x = GUIConstants.COMPONENT_PADDING
 
                     if not self.is_scrollable_text:
-                        logger.warning("Button label \"{self.text}\" with icon inline will not fit but is_scrollable_text is False")
+                        logger.warning(f"Button label \"{self.text}\" with icon inline will not fit but is_scrollable_text is False")
 
                 if self.is_text_centered:
                     if self.text:
@@ -1479,7 +1479,7 @@ class Button(BaseComponent):
                 self.is_text_centered = False
 
                 if not self.is_scrollable_text:
-                    logger.warning("Button label \"{self.text}\" with icon inline will not fit but is_scrollable_text is False")
+                    logger.warning(f"Button label \"{self.text}\" with right icon will not fit but is_scrollable_text is False")
 
             self.right_icon_x = self.width - self.right_icon.width - GUIConstants.COMPONENT_PADDING
 

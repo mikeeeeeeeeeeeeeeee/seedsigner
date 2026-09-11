@@ -1,3 +1,16 @@
+> [!CAUTION]
+> **Unofficial fork — modified by an AI agent without human review.**
+>
+> This is a personal fork of [SeedSigner](https://github.com/SeedSigner/seedsigner).
+> Changes in this repository are made autonomously by an AI coding agent and are
+> **not reviewed line by line by a human**. They may contain bugs, regressions,
+> security flaws, or half-finished features, and they have not been audited.
+>
+> **Do not use this fork with real funds.** If you want a reviewed, released build,
+> use the [upstream SeedSigner project](https://github.com/SeedSigner/seedsigner).
+>
+> This fork is not affiliated with or endorsed by the SeedSigner project.
+
 # Build an offline, airgapped Bitcoin signing device for less than $50!
 
 ![Image of SeedSigners in Mini Pill Enclosures](docs/img/Mini_Pill_Main_Photo.jpg)

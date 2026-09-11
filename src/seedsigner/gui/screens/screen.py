@@ -314,6 +314,22 @@ class ButtonListScreen(BaseTopNavScreen):
     # ensure the screen is at least scrolled to reveal the `selected_button`.
     scroll_y_initial_offset: int = None
 
+    # Vertical space kept free above the button list for the up scroll arrow (an 8px
+    # image drawn 12px above the list) when a subclass renders its own header content.
+    SCROLL_ARROW_RESERVE = 12
+
+
+    def build_header_components(self) -> int:
+        """
+            Optional hook for subclasses that render their own content between the top
+            nav and the button list (e.g. a settings entry's name and help text).
+
+            Append any components here and return the y coord that the button list must
+            stay below. The default implementation adds nothing and reserves no space
+            beyond the top nav.
+        """
+        return self.top_nav.height
+
 
     def __post_init__(self):
         if not self.button_font_name:
@@ -321,6 +337,19 @@ class ButtonListScreen(BaseTopNavScreen):
         if not self.button_font_size:
             self.button_font_size = GUIConstants.get_button_font_size()
         super().__post_init__()
+
+        # Subclasses may render their own content between the top nav and the button
+        # list. The button list must never be placed on top of it.
+        header_bottom_y = self.build_header_components()
+        if header_bottom_y > self.top_nav.height:
+            # The up scroll arrow is drawn in the gap just above the button list. With
+            # header content present that gap would otherwise land on top of it, so
+            # reserve the arrow's height here. Screens with no header content keep their
+            # original layout, where the arrow sits over the empty top nav margin.
+            self.content_top_y = header_bottom_y + self.SCROLL_ARROW_RESERVE
+        else:
+            self.content_top_y = header_bottom_y
+        content_top_y = self.content_top_y
 
         button_height = GUIConstants.BUTTON_HEIGHT
         if len(self.button_data) == 1:
@@ -331,12 +360,12 @@ class ButtonListScreen(BaseTopNavScreen):
         if self.is_bottom_list:
             button_list_y = self.canvas_height - (button_list_height + GUIConstants.EDGE_PADDING)
         else:
-            button_list_y = self.top_nav.height + int((self.canvas_height - self.top_nav.height - button_list_height) / 2)
+            button_list_y = content_top_y + int((self.canvas_height - content_top_y - button_list_height) / 2)
 
         self.has_scroll_arrows = False
-        if button_list_y < self.top_nav.height:
+        if button_list_y < content_top_y:
             # The button list is too long; force it to run off the bottom of the screen.
-            button_list_y = self.top_nav.height
+            button_list_y = content_top_y
             self.has_scroll_arrows = True
 
             # How many buttons fit on the screen before we need to start scrolling?
@@ -390,7 +419,7 @@ class ButtonListScreen(BaseTopNavScreen):
         if self.has_scroll_arrows:
             self.arrow_half_width = 10
             self.up_arrow_img = Image.new("RGBA", size=(2 * self.arrow_half_width, 8), color="black")
-            self.up_arrow_img_y = self.top_nav.height - 12
+            self.up_arrow_img_y = self.content_top_y - 12
             arrow_draw = ImageDraw.Draw(self.up_arrow_img)
             arrow_draw.line((self.arrow_half_width, 1, 0, 7), fill=GUIConstants.BUTTON_FONT_COLOR)
             arrow_draw.line((self.arrow_half_width, 1, 2 * self.arrow_half_width, 7), fill=GUIConstants.BUTTON_FONT_COLOR)
@@ -433,7 +462,7 @@ class ButtonListScreen(BaseTopNavScreen):
                 continue
 
             button_position_y = button.screen_y - button.scroll_y
-            if button_position_y >= self.top_nav.height and button_position_y < self.down_arrow_img_y:
+            if button_position_y >= self.content_top_y and button_position_y < self.down_arrow_img_y:
                 if i == 0:
                     # We rendered the top button; no more to scroll up for.
                     self._hide_up_arrow()
@@ -514,7 +543,7 @@ class ButtonListScreen(BaseTopNavScreen):
                         next_selected_button: Button = self.buttons[self.selected_button]
                         cur_selected_button.is_selected = False
                         next_selected_button.is_selected = True
-                        if self.has_scroll_arrows and next_selected_button.screen_y - next_selected_button.scroll_y + next_selected_button.height < self.top_nav.height:
+                        if self.has_scroll_arrows and next_selected_button.screen_y - next_selected_button.scroll_y + next_selected_button.height < self.content_top_y:
                             # Selected a Button that's off the top of the screen
                             frame_scroll = cur_selected_button.screen_y - next_selected_button.screen_y
                             for button in self.buttons:
@@ -1094,7 +1123,9 @@ class PowerOffNotRequiredScreen(BaseTopNavScreen):
         super().__post_init__()
 
         self.components.append(TextArea(
-            text=_("It is safe to disconnect power at any time."),
+            # TRANSLATOR_NOTE: Reassures the user there is no shutdown sequence, and
+            # reminds them that seeds live only in memory and do not survive power loss.
+            text=_("It is safe to disconnect power at any time. Any seeds you loaded are erased."),
             screen_y=self.top_nav.height,
             height=self.canvas_height - self.top_nav.height,
         ))

@@ -73,8 +73,18 @@ class ScanView(View):
                 seed_mnemonic = self.decoder.get_seed_phrase()
 
                 if not seed_mnemonic:
-                    # seed is not valid, Exit if not valid with message
-                    return Destination(NotYetImplementedView)
+                    # The QR was recognized as a seed format but no valid mnemonic came
+                    # back out of the decoder. Defensive: the decoder only reports
+                    # `is_complete` once the mnemonic has validated, so this is not
+                    # expected to be reachable. Report it as the decoding failure it is
+                    # rather than as an unimplemented feature.
+                    return Destination(ErrorView, view_args=dict(
+                        title="Error",
+                        status_headline=_("Invalid Seed QR"),
+                        text=_("Could not read a valid seed phrase from this QR code."),
+                        button_text="Back",
+                        next_destination=Destination(BackStackView, skip_current_view=True),
+                    ))
                 else:
                     # Found a valid mnemonic seed! All new seeds should be considered
                     #   pending (might set a passphrase, SeedXOR, etc) until finalized.
@@ -125,7 +135,9 @@ class ScanView(View):
                 if not descriptor.is_basic_multisig:
                     # TODO: Handle single-sig descriptors?
                     logger.info(f"Received single sig descriptor: {descriptor}")
-                    return Destination(NotYetImplementedView)
+                    return Destination(NotYetImplementedView, view_args=dict(
+                        text=_("Only multisig wallet descriptors are supported here."),
+                    ))
 
                 self.controller.multisig_wallet_descriptor = descriptor
                 return Destination(MultisigWalletDescriptorView, skip_current_view=True)

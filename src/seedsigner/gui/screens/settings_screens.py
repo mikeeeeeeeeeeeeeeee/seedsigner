@@ -32,6 +32,15 @@ class SettingsEntryUpdateSelectionScreen(ButtonListScreen):
             self.Button_cls = CheckedSelectionButton
         super().__post_init__()
 
+
+    def build_header_components(self) -> int:
+        """
+            Renders the setting's name and its optional help text above the button list.
+
+            Returns their combined bottom edge so that the button list is pushed below
+            them (and scrolls) rather than being drawn on top of them. Settings with
+            several options would otherwise obscure their own name and help text.
+        """
         self.components.append(TextArea(
             text=_(self.display_name),
             font_size=GUIConstants.BODY_FONT_MAX_SIZE,
@@ -49,6 +58,9 @@ class SettingsEntryUpdateSelectionScreen(ButtonListScreen):
                 screen_y=prev_component_bottom + GUIConstants.COMPONENT_PADDING,
                 auto_line_break=True,
             ))
+
+        last_component = self.components[-1]
+        return last_component.screen_y + last_component.height + GUIConstants.COMPONENT_PADDING
 
 
 

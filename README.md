@@ -1,3 +1,16 @@
+> [!CAUTION]
+> **Unofficial fork — modified by an AI agent without human review.**
+>
+> This is a personal fork of [SeedSigner](https://github.com/SeedSigner/seedsigner).
+> Changes in this repository are made autonomously by an AI coding agent and are
+> **not reviewed line by line by a human**. They may contain bugs, regressions,
+> security flaws, or half-finished features, and they have not been audited.
+>
+> **Do not use this fork with real funds.** If you want a reviewed, released build,
+> use the [upstream SeedSigner project](https://github.com/SeedSigner/seedsigner).
+>
+> This fork is not affiliated with or endorsed by the SeedSigner project.
+
 # Build an offline, airgapped Bitcoin signing device for less than $50!
 
 ![Image of SeedSigners in Mini Pill Enclosures](docs/img/Mini_Pill_Main_Photo.jpg)
@@ -5,6 +18,7 @@
 ---------------
 
 * [Project Summary](#project-summary)
+* [Getting Started (first-time users)](docs/getting_started.md)
 * [Shopping List](#shopping-list)
 * [Software Installation](#software-installation)
   * [Verifying your download](#verifying-your-download)
@@ -28,6 +42,8 @@ Additional information about the project can be found at [SeedSigner.com](https:
 You can follow [@SeedSigner](https://twitter.com/SeedSigner) on Twitter for the latest project news and developments.
 
 If you have specific questions about the project, our [Telegram Group](https://t.me/joinchat/GHNuc_nhNQjLPWsS) is a great place to ask them.
+
+New to SeedSigner? Once your device boots, [Getting Started](docs/getting_started.md) walks through the controls, creating or loading a seed, and signing your first transaction.
 
 ### Feature Highlights:
 * Stateless, air-gapped operation:

@@ -580,15 +580,31 @@ class SettingsDefinition:
                       attr_name=SettingsConstants.SETTING__BTC_DENOMINATION,
                       abbreviated_name="denom",
                       display_name=_mft("Denomination display"),
+                      # TRANSLATOR_NOTE: How bitcoin amounts are displayed throughout the UI
+                      help_text=_mft("How amounts are displayed"),
                       type=SettingsConstants.TYPE__SELECT_1,
                       selection_options=SettingsConstants.ALL_BTC_DENOMINATIONS,
                       default_value=SettingsConstants.BTC_DENOMINATION__THRESHOLD),
+
+        # A misoriented camera makes QR scanning -- the device's primary input -- fail
+        # outright, so this stays at the top level rather than nested under "Advanced".
+        SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
+                      attr_name=SettingsConstants.SETTING__CAMERA_ROTATION,
+                      abbreviated_name="camera",
+                      display_name=_mft("Camera rotation"),
+                      # TRANSLATOR_NOTE: Use this if the camera preview appears upside down or sideways
+                      help_text=_mft("Fix an upside-down camera preview"),
+                      type=SettingsConstants.TYPE__SELECT_1,
+                      selection_options=SettingsConstants.ALL_CAMERA_ROTATIONS,
+                      default_value=SettingsConstants.CAMERA_ROTATION__180),
      
 
         # Advanced options
         SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
                       attr_name=SettingsConstants.SETTING__NETWORK,
                       display_name=_mft("Bitcoin network"),
+                      # TRANSLATOR_NOTE: Mainnet is real bitcoin; testnet/regtest coins have no value
+                      help_text=_mft("Mainnet is real bitcoin"),
                       type=SettingsConstants.TYPE__SELECT_1,
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       selection_options=SettingsConstants.ALL_NETWORKS,
@@ -597,6 +613,8 @@ class SettingsDefinition:
         SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
                       attr_name=SettingsConstants.SETTING__QR_DENSITY,
                       display_name=_mft("QR code density"),
+                      # TRANSLATOR_NOTE: Denser QR codes fit more data per frame but are harder for a wallet to scan
+                      help_text=_mft("Denser is faster but harder to scan"),
                       type=SettingsConstants.TYPE__SELECT_1,
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       selection_options=SettingsConstants.ALL_DENSITIES,
@@ -606,6 +624,8 @@ class SettingsDefinition:
                       attr_name=SettingsConstants.SETTING__SIG_TYPES,
                       abbreviated_name="sigs",
                       display_name=_mft("Sig types"),
+                      # TRANSLATOR_NOTE: Single sig = one key signs; multisig = several keys must sign
+                      help_text=_mft("Single sig and/or multisig wallets"),
                       type=SettingsConstants.TYPE__MULTISELECT,
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       selection_options=SettingsConstants.ALL_SIG_TYPES,
@@ -615,6 +635,8 @@ class SettingsDefinition:
                       attr_name=SettingsConstants.SETTING__SCRIPT_TYPES,
                       abbreviated_name="scripts",
                       display_name=_mft("Script types"),
+                      # TRANSLATOR_NOTE: Script type determines the address format (e.g. bc1... vs 3...)
+                      help_text=_mft("Address formats your wallet uses"),
                       type=SettingsConstants.TYPE__MULTISELECT,
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       selection_options=SettingsConstants.ALL_SCRIPT_TYPES,
@@ -623,6 +645,8 @@ class SettingsDefinition:
         SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
                       attr_name=SettingsConstants.SETTING__XPUB_QR_FORMAT,
                       display_name=_mft("Xpub QR format"),
+                      # TRANSLATOR_NOTE: Which QR format the xpub is exported in; must match the wallet software
+                      help_text=_mft("Must match your wallet software"),
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       type=SettingsConstants.TYPE__MULTISELECT,
                       selection_options=SettingsConstants.ALL_XPUB_QR_FORMATS,
@@ -634,29 +658,26 @@ class SettingsDefinition:
         SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
                       attr_name=SettingsConstants.SETTING__XPUB_DETAILS,
                       display_name=_mft("Show xpub details"),
+                      # TRANSLATOR_NOTE: Extra technical detail shown alongside an exported xpub
+                      help_text=_mft("Show derivation path details"),
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       default_value=SettingsConstants.OPTION__ENABLED),
 
         SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
                       attr_name=SettingsConstants.SETTING__PASSPHRASE,
                       display_name=_mft("BIP-39 passphrase"),
+                      # TRANSLATOR_NOTE: An optional extra secret that creates a different wallet from the same seed
+                      help_text=_mft("Optional extra secret word"),
                       type=SettingsConstants.TYPE__SELECT_1,
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       selection_options=SettingsConstants.OPTIONS__ENABLED_DISABLED_REQUIRED,
                       default_value=SettingsConstants.OPTION__ENABLED),
 
         SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
-                      attr_name=SettingsConstants.SETTING__CAMERA_ROTATION,
-                      abbreviated_name="camera",
-                      display_name=_mft("Camera rotation"),
-                      type=SettingsConstants.TYPE__SELECT_1,
-                      visibility=SettingsConstants.VISIBILITY__ADVANCED,
-                      selection_options=SettingsConstants.ALL_CAMERA_ROTATIONS,
-                      default_value=SettingsConstants.CAMERA_ROTATION__180),
-
-        SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
                       attr_name=SettingsConstants.SETTING__COMPACT_SEEDQR,
                       display_name=_mft("Compact SeedQR"),
+                      # TRANSLATOR_NOTE: A smaller SeedQR format with fewer dots to transcribe by hand
+                      help_text=_mft("Smaller QR, less to transcribe"),
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       default_value=SettingsConstants.OPTION__ENABLED),
 
@@ -664,6 +685,8 @@ class SettingsDefinition:
                       attr_name=SettingsConstants.SETTING__BIP85_CHILD_SEEDS,
                       abbreviated_name="bip85",
                       display_name=_mft("BIP-85 child seeds"),
+                      # TRANSLATOR_NOTE: Derive additional independent seeds from one master seed
+                      help_text=_mft("Derive extra seeds from this seed"),
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       default_value=SettingsConstants.OPTION__DISABLED),
 
@@ -678,6 +701,8 @@ class SettingsDefinition:
         SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
                       attr_name=SettingsConstants.SETTING__MICROSD_TOAST_TIMER,
                       display_name=_mft("MicroSD notification duration"),
+                      # TRANSLATOR_NOTE: How long the on-screen alert stays up when the SD card is inserted/removed
+                      help_text=_mft("How long the SD alert is shown"),
                       type=SettingsConstants.TYPE__SELECT_1,
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       selection_options=SettingsConstants.ALL_MICROSD_TOAST_TIMERS,
@@ -686,6 +711,8 @@ class SettingsDefinition:
         SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
                       attr_name=SettingsConstants.SETTING__MESSAGE_SIGNING,
                       display_name=_mft("Message signing"),
+                      # TRANSLATOR_NOTE: Sign an arbitrary text message to prove you control an address
+                      help_text=_mft("Prove you control an address"),
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       default_value=SettingsConstants.OPTION__DISABLED),
 
@@ -693,6 +720,8 @@ class SettingsDefinition:
                       attr_name=SettingsConstants.SETTING__PRIVACY_WARNINGS,
                       abbreviated_name="priv_warn",
                       display_name=_mft("Show privacy warnings"),
+                      # TRANSLATOR_NOTE: Warnings shown before displaying data that could leak your privacy
+                      help_text=_mft("Warn before revealing an xpub"),
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       default_value=SettingsConstants.OPTION__ENABLED),
 
@@ -700,12 +729,16 @@ class SettingsDefinition:
                       attr_name=SettingsConstants.SETTING__DIRE_WARNINGS,
                       abbreviated_name="dire_warn",
                       display_name=_mft("Show dire warnings"),
+                      # TRANSLATOR_NOTE: Warnings shown before displaying secret data such as seed words
+                      help_text=_mft("Warn before showing seed words"),
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       default_value=SettingsConstants.OPTION__ENABLED),
 
         SettingsEntry(category=SettingsConstants.CATEGORY__FEATURES,
                       attr_name=SettingsConstants.SETTING__QR_BRIGHTNESS_TIPS,
                       display_name=_mft("Show QR brightness tips"),
+                      # TRANSLATOR_NOTE: Hint shown on QR screens explaining how to fix a QR a wallet cannot scan
+                      help_text=_mft("Hint if a QR will not scan"),
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       default_value=SettingsConstants.OPTION__ENABLED),
 
@@ -713,6 +746,8 @@ class SettingsDefinition:
                       attr_name=SettingsConstants.SETTING__PARTNER_LOGOS,
                       abbreviated_name="partners",
                       display_name=_mft("Show partner logos"),
+                      # TRANSLATOR_NOTE: Partner logos shown in the screensaver
+                      help_text=_mft("Show logos in the screensaver"),
                       visibility=SettingsConstants.VISIBILITY__ADVANCED,
                       default_value=SettingsConstants.OPTION__ENABLED),
 
@@ -723,6 +758,8 @@ class SettingsDefinition:
                       abbreviated_name="disp_conf",
                       # TRANSLATOR_NOTE: Hardware settings option to specify the screen driver (e.g. st7789 vs ili9341)
                       display_name=_mft("Display type"),
+                      # TRANSLATOR_NOTE: Only change this if the screen is blank, garbled or the wrong size
+                      help_text=_mft("Only change if the screen is wrong"),
                       type=SettingsConstants.TYPE__SELECT_1,
                       visibility=SettingsConstants.VISIBILITY__HARDWARE,
                       selection_options=SettingsConstants.ALL_DISPLAY_CONFIGURATIONS,
@@ -733,6 +770,8 @@ class SettingsDefinition:
                       abbreviated_name="rgb_inv",
                       # TRANSLATOR_NOTE: Hardware settings option to invert how the screen driver displays colors.
                       display_name=_mft("Invert colors"),
+                      # TRANSLATOR_NOTE: Use this if screen colors look wrong (e.g. red and blue swapped)
+                      help_text=_mft("Fix wrong-looking screen colors"),
                       type=SettingsConstants.TYPE__ENABLED_DISABLED,
                       visibility=SettingsConstants.VISIBILITY__HARDWARE,
                       default_value=SettingsConstants.OPTION__DISABLED),

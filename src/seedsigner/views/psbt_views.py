@@ -183,7 +183,8 @@ class PSBTUnsupportedScriptTypeWarningView(View):
         selected_menu_num = self.run_screen(
             WarningScreen,
             status_headline=_("Unsupported Script Type!"),
-            text=_("Transaction has unsupported input script type, please verify your change addresses."),
+            # TRANSLATOR_NOTE: SeedSigner cannot confirm the change output is really the user's own
+            text=_("SeedSigner cannot verify change for this script type. Check the change address yourself."),
             button_data=[ButtonOption("Continue")],
         )
         
